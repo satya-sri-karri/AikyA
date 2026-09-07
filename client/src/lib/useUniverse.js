@@ -54,16 +54,22 @@ export function useUniverse(keys = Object.keys(GETTERS)) {
   return { data, loading, refresh };
 }
 
+// Real geographic center of Aditya University, Aditya Nagar, ADB Road,
+// Surampalem (Gandepalli Mandal, East Godavari, Andhra Pradesh — 533437).
+export const CAMPUS_CENTER = { latitude: 17.0894, longitude: 82.0668 };
+export const CAMPUS_GATE = { latitude: 17.0894, longitude: 82.0668, name: "Main Gate" };
+
 export function getCampusConfig() {
   return {
     canvasWidth: 1200,
     canvasHeight: 760,
     // Layout geometry that maps POI lat/lng into canvas coordinates.
+    // Bounds around the Aditya University campus footprint.
     bounds: {
-      minLat: 16.306,
-      maxLat: 16.3084,
-      minLng: 80.4356,
-      maxLng: 80.4376,
+      minLat: 17.0875,
+      maxLat: 17.0912,
+      minLng: 82.065,
+      maxLng: 82.069,
     },
   };
 }

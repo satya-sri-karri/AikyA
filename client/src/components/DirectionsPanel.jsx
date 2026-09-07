@@ -1,20 +1,19 @@
 import { useMemo, useState } from "react";
-import { Compass, X, LocateFixed, Accessibility, MapPinned, Footprints, Navigation } from "lucide-react";
-import { distanceMeters, getCampusConfig, unproject } from "../lib/useUniverse.js";
+import { Compass, X, LocateFixed, Accessibility, MapPinned, Footprints, Navigation, ExternalLink } from "lucide-react";
+import { distanceMeters, CAMPUS_GATE } from "../lib/useUniverse.js";
 import { useToast } from "../context/ToastContext.jsx";
 
-const GATE_CANVAS = { x: 55, y: 345 }; // matches the drawn Main Gate on the map
 const WALK_M_PER_MIN = 72;
 
 function stepsFor(target, originName, accessible) {
   const floor = target.floor || "";
   const steps = [];
   steps.push(originName ? `Start from ${originName}` : "Start from the Main Gate");
-  steps.push("Exit through the Main Gate");
+  steps.push("Exit through the Main Gate (ADB Road)");
   if (target.block && target.block !== target.name) {
-    steps.push(`Follow the main road to ${target.block}`);
+    steps.push(`Follow the campus roads to ${target.block}`);
   } else {
-    steps.push(`Follow the main road towards ${target.name}`);
+    steps.push(`Follow the campus roads towards ${target.name}`);
   }
   steps.push(
     accessible
@@ -27,20 +26,20 @@ function stepsFor(target, originName, accessible) {
   return steps;
 }
 
-export default function DirectionsPanel({ target, onClose }) {
+export default function DirectionsPanel({ target, origin: originProp, onClose }) {
   const [accessible, setAccessible] = useState(false);
   const [origin, setOrigin] = useState(null); // geolocation result; falls back to gate
   const [locating, setLocating] = useState(false);
   const { toast } = useToast();
 
-  const gate = useMemo(() => {
-    const cfg = getCampusConfig();
-    return { ...unproject(GATE_CANVAS.x, GATE_CANVAS.y, cfg), name: "Main Gate" };
-  }, []);
+  const gate = useMemo(() => ({ ...CAMPUS_GATE }), []);
 
-  const effectiveOrigin = origin || gate;
+  const effectiveOrigin = origin || originProp || gate;
 
-  const dist = useMemo(() => distanceMeters(effectiveOrigin, target), [effectiveOrigin, target]);
+  const dist = useMemo(
+    () => distanceMeters(effectiveOrigin, { latitude: target.latitude, longitude: target.longitude }),
+    [effectiveOrigin, target]
+  );
   const etaMin = dist ? Math.max(1, Math.round(dist / WALK_M_PER_MIN)) : null;
 
   const steps = useMemo(
@@ -73,6 +72,11 @@ export default function DirectionsPanel({ target, onClose }) {
     toast(`Route to ${target.name} is ready — follow the steps above.`, "success");
     onClose();
   }
+
+  const mapsHref =
+    target.latitude != null && target.longitude != null && effectiveOrigin.latitude != null
+      ? `https://www.google.com/maps/dir/?api=1&origin=${effectiveOrigin.latitude},${effectiveOrigin.longitude}&destination=${target.latitude},${target.longitude}`
+      : null;
 
   return (
     <div className="map-detail" style={{ width: "min(400px, 90vw)" }}>
@@ -123,10 +127,15 @@ export default function DirectionsPanel({ target, onClose }) {
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 8, paddingTop: 6 }}>
+        <div style={{ display: "flex", gap: 8, paddingTop: 6, flexWrap: "wrap" }}>
           <button className="btn btn-primary" style={{ flex: 1 }} onClick={start}>
             <Navigation size={15} /> Start Navigation
           </button>
+          {mapsHref && (
+            <a className="btn btn-soft" href={mapsHref} target="_blank" rel="noreferrer">
+              <ExternalLink size={14} /> Open in Maps
+            </a>
+          )}
         </div>
       </div>
     </div>

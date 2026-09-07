@@ -21,15 +21,19 @@ const ALL_COLLECTIONS = Object.keys(COLLECTION_LOADERS);
 const INTENT_KEYWORDS = [
   {
     intent: "departments",
-    keywords: ["department", "dept", "cse", "aiml", "ece", "block", "lab", "hod"],
+    keywords: [
+      "department", "dept", "cse", "aiml", "ai&ds", "ece", "eee", "mechanical", "civil",
+      "mining", "petroleum", "mca", "mba", "bca", "pharmacy", "pharm", "sciences",
+      "block", "lab", "hod", "school",
+    ],
   },
   {
     intent: "faculty",
-    keywords: ["faculty", "teacher", "professor", "prof", "teach", "mentor", "lecturer", "staff"],
+    keywords: ["faculty", "teacher", "professor", "prof", "teach", "mentor", "lecturer", "staff", "dean", "hod", "cabin"],
   },
   {
     intent: "food",
-    keywords: ["food", "eat", "canteen", "snack", "restaurant", "shop", "lunch", "breakfast", "dinner", "dosa", "idly", "idli", "tea", "coffee", "maggi", "menu", "price", "hungry"],
+    keywords: ["food", "eat", "canteen", "snack", "restaurant", "shop", "lunch", "breakfast", "dinner", "dosa", "idly", "idli", "tea", "coffee", "maggi", "menu", "price", "hungry", "biryani", "samosa"],
   },
   {
     intent: "hostel",
@@ -41,7 +45,7 @@ const INTENT_KEYWORDS = [
   },
   {
     intent: "office",
-    keywords: ["office", "account", "fee", "medical", "doctor", "nurse", "first aid", "health", "sick", "admission"],
+    keywords: ["office", "account", "fee", "medical", "doctor", "nurse", "first aid", "health", "sick", "admission", "bank", "atm", "placement", "career", "incubator", "training", "agbi"],
   },
   {
     intent: "access",
@@ -53,7 +57,7 @@ const INTENT_KEYWORDS = [
   },
   {
     intent: "transport",
-    keywords: ["bus", "route", "transport", "stop", "commute", "driver", "vehicle"],
+    keywords: ["bus", "route", "transport", "stop", "commute", "driver", "vehicle", "busbay", "kakinada"],
   },
   {
     intent: "places",

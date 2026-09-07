@@ -905,6 +905,66 @@ a.chip { text-decoration: none; }
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
+
+/* Leaflet real-map embedding */
+.leaflet-shell { z-index: 0; }
+.leaflet-shell .leaflet-container { background: var(--map-bg); width: 100%; height: 100%; font-family: inherit; }
+.leaflet-shell .leaflet-control-attribution {
+  font-size: 10px; color: var(--text-faint);
+  background: var(--glass-strong); backdrop-filter: blur(8px);
+  border-radius: 8px 0 0 0; padding: 2px 8px;
+}
+.leaflet-shell .leaflet-control-attribution a { color: var(--text-weak); }
+
+.map-marker-shell {
+  background: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.map-marker {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  padding-top: 4px;
+}
+.map-marker .marker-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  font-size: 16px;
+  background: var(--glass-strong);
+  border: 2px solid var(--dot, var(--accent));
+  box-shadow: var(--shadow-md);
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  position: relative;
+}
+.map-marker:hover .marker-icon { transform: scale(1.12); }
+.map-marker.selected .marker-icon {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--dot, var(--accent)) 22%, transparent), var(--shadow-md);
+}
+.map-marker .marker-ping {
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid var(--dot, var(--accent));
+  animation: pinpulse 1.8s infinite;
+}
+.map-marker .marker-label {
+  margin-top: 3px;
+  max-width: 130px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  font-size: 10.5px; font-weight: 700; line-height: 1.2; text-align: center;
+  color: var(--text);
+  white-space: normal;
+}
 .map-canvas-outer { overflow: hidden; touch-action: none; cursor: grab; }
 .map-canvas-outer.dragging { cursor: grabbing; }
 .map-canvas-inner { transform-origin: 0 0; transition: transform 0.3s var(--ease); will-change: transform; }
@@ -1119,6 +1179,14 @@ a.chip { text-decoration: none; }
 .landing-hero { position: relative; padding: clamp(60px, 9vh, 110px) 24px 40px; text-align: center; overflow: hidden; }
 .landing-hero h1 { font-size: clamp(42px, 7.5vw, 82px); font-weight: 800; letter-spacing: -0.045em; position: relative; line-height: 1.02; }
 .landing-hero .hero-sub { position: relative; color: var(--text-weak); font-size: clamp(16px, 2.2vw, 20px); margin-top: 20px; max-width: 640px; margin-left: auto; margin-right: auto; font-weight: 450; }
+.landing-hero .hero-stats { position: relative; margin-top: 32px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.landing-hero .hero-stat {
+  min-width: 120px; padding: 12px 18px; border-radius: 16px;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+}
+.landing-hero .hero-stat strong { display: block; font-size: 19px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.landing-hero .hero-stat span { font-size: 11px; font-weight: 600; color: var(--text-weak); letter-spacing: 0.02em; }
 .landing-hero .hero-cta { position: relative; margin-top: 34px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .accent-text { background: var(--grad-ai); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
