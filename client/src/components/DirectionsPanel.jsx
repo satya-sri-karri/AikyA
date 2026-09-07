@@ -26,15 +26,14 @@ function stepsFor(target, originName, accessible) {
   return steps;
 }
 
-export default function DirectionsPanel({ target, origin: originProp, onClose }) {
+export default function DirectionsPanel({ target, origin: originProp, onLocate, onClose }) {
   const [accessible, setAccessible] = useState(false);
-  const [origin, setOrigin] = useState(null); // geolocation result; falls back to gate
   const [locating, setLocating] = useState(false);
   const { toast } = useToast();
 
   const gate = useMemo(() => ({ ...CAMPUS_GATE }), []);
 
-  const effectiveOrigin = origin || originProp || gate;
+  const effectiveOrigin = originProp || gate;
 
   const dist = useMemo(
     () => distanceMeters(effectiveOrigin, { latitude: target.latitude, longitude: target.longitude }),
@@ -56,12 +55,17 @@ export default function DirectionsPanel({ target, origin: originProp, onClose })
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocating(false);
-        setOrigin({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, name: "Your location" });
+        onLocate?.({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+          name: "Your location",
+        });
         toast("Using your current location.", "success");
       },
       () => {
         setLocating(false);
-        setOrigin(null);
+        onLocate?.(null);
         toast("Couldn't find your location — starting from the Main Gate.", "warning");
       },
       { enableHighAccuracy: true, timeout: 6000 }

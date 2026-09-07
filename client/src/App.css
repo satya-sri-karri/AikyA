@@ -69,6 +69,7 @@
   --map-bg: #E9F5FC;
   --map-road: #F6FCFE;
   --map-road-line: #C9E7F6;
+  --map-vignette: rgba(24, 33, 43, 0.16);
 }
 
 /* ---------- Tokens: Dark (command center) ---------- */
@@ -121,6 +122,7 @@
   --map-bg: #0B1424;
   --map-road: #16233A;
   --map-road-line: #1F3049;
+  --map-vignette: rgba(0, 0, 0, 0.48);
 }
 
 /* ---------- Reset / base ---------- */
@@ -905,6 +907,11 @@ a.chip { text-decoration: none; }
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
+/* Soft vignette that lifts the map off the page. */
+.map-shell::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 110% at 50% 40%, transparent 55%, var(--map-vignette) 100%);
+}
 
 /* Leaflet real-map embedding */
 .leaflet-shell { z-index: 0; }
@@ -916,55 +923,252 @@ a.chip { text-decoration: none; }
 }
 .leaflet-shell .leaflet-control-attribution a { color: var(--text-weak); }
 
-.map-marker-shell {
-  background: transparent;
-  border: none;
-  display: flex;
-  justify-content: center;
+/* Scale bar */
+.leaflet-control-scale { margin: 0 10px 10px 0; }
+.leaflet-control-scale-line {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(24, 33, 43, 0.22) !important;
+  border-top: none !important;
+  color: var(--text-weak) !important;
+  font-size: 10px; padding: 1px 6px; border-radius: 0 0 5px 5px;
+}
+.dark .leaflet-control-scale-line {
+  background: rgba(8, 14, 26, 0.72) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ---------- Premium location-pin markers ---------- */
+.map-marker-shell, .map-gate-shell, .route-shell, .indoor-shell {
+  background: transparent; border: none;
+  display: flex; justify-content: center;
   pointer-events: none;
 }
 .map-marker {
   pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: flex; flex-direction: column; align-items: center;
   cursor: pointer;
   transform: translate(-50%, -100%);
-  padding-top: 4px;
+  padding-top: 6px;
+  filter: drop-shadow(0 6px 10px rgba(20, 30, 60, 0.28));
+  animation: markerIn 0.35s var(--ease);
 }
-.map-marker .marker-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border-radius: 50%;
-  font-size: 16px;
-  background: var(--glass-strong);
+@keyframes markerIn { from { opacity: 0; transform: translate(-50%, -96%) scale(0.5); } to { opacity: 1; transform: translate(-50%, -100%) scale(1); } }
+
+.marker-pin {
+  position: relative;
+  width: 34px; height: 34px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(140deg, color-mix(in srgb, var(--dot, var(--accent)) 82%, #fff 18%), var(--dot, var(--accent)));
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28), inset 0 0 0 2px rgba(255, 255, 255, 0.32);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.marker-pin-dot {
+  position: absolute; inset: 7px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; line-height: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.map-marker:hover .marker-pin { transform: rotate(-45deg) scale(1.12); }
+.map-marker:hover .marker-label { border-color: var(--dot, var(--accent)); }
+.map-marker.selected .marker-pin {
+  transform: rotate(-45deg) scale(1.18);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--dot, var(--accent)) 26%, transparent), 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+.map-marker.selected::before {
+  content: ""; position: absolute; top: 12px; left: 50%;
+  width: 44px; height: 44px; margin-left: -22px;
+  border-radius: 50%;
   border: 2px solid var(--dot, var(--accent));
-  box-shadow: var(--shadow-md);
-  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  animation: pinpulse 1.6s infinite;
+}
+.marker-label {
+  pointer-events: auto;
+  margin-top: 4px; max-width: 150px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 9px; border-radius: 999px;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: var(--shadow-sm);
+  font-size: 11px; font-weight: 700; line-height: 1.15;
+  color: var(--text); text-align: left;
+  transition: border-color 0.15s;
+}
+.ml-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Collapse labels & shrink pins when zoomed far out. */
+.map-shell.zoom-far .marker-label, .map-shell.zoom-far .map-gate-label,
+.map-shell.zoom-far .indoor-label { display: none; }
+.map-shell.zoom-far .marker-pin { width: 26px; height: 26px; }
+.map-shell.zoom-far .marker-pin-dot { inset: 5px; font-size: 11px; }
+
+/* ---------- Main Gate ---------- */
+.map-gate {
+  display: flex; flex-direction: column; align-items: center;
+  transform: translate(-50%, -100%);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: markerIn 0.4s var(--ease);
+}
+.map-gate-icon {
+  width: 28px; height: 28px; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(135deg, #F4C450, #E3A30E);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.42);
   position: relative;
 }
-.map-marker:hover .marker-icon { transform: scale(1.12); }
-.map-marker.selected .marker-icon {
-  transform: scale(1.15);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--dot, var(--accent)) 22%, transparent), var(--shadow-md);
+.map-gate-icon::after {
+  content: "🚪"; position: absolute; inset: 0;
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
 }
-.map-marker .marker-ping {
-  position: absolute; inset: -6px; border-radius: 50%;
-  border: 2px solid var(--dot, var(--accent));
-  animation: pinpulse 1.8s infinite;
+.map-gate-label {
+  margin-top: 4px; padding: 3px 9px; border-radius: 999px;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.03em;
+  color: var(--warning); white-space: nowrap;
 }
-.map-marker .marker-label {
-  margin-top: 3px;
-  max-width: 130px;
-  padding: 3px 8px;
-  border-radius: 8px;
-  background: var(--glass-strong);
-  border: 1px solid var(--glass-border);
+
+/* ---------- Indoor room markers ---------- */
+.indoor-marker {
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: auto; cursor: pointer;
+  transform: translate(-50%, -100%);
+  animation: markerIn 0.3s var(--ease);
+}
+.indoor-head {
+  min-width: 30px; padding: 4px 7px; border-radius: 9px 9px 9px 3px;
+  background: var(--ink, #8A7BFF); color: #fff;
+  font-size: 10px; font-weight: 800; text-align: center; letter-spacing: 0.02em;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.indoor-label {
+  margin-top: 2px; max-width: 100px;
+  padding: 1px 6px; border-radius: 6px;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-sm);
-  font-size: 10.5px; font-weight: 700; line-height: 1.2; text-align: center;
-  color: var(--text);
-  white-space: normal;
+  color: var(--text-weak); font-size: 8.5px; font-weight: 600; white-space: nowrap;
 }
+
+/* ---------- Tooltip ---------- */
+.map-tip {
+  background: var(--glass-strong) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text) !important;
+  font-size: 12px; font-weight: 700;
+  border-radius: 10px; padding: 6px 10px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+}
+.map-tip::before { border-top-color: var(--glass-strong) !important; }
+
+/* ---------- Route markers ---------- */
+.map-route-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #1E9E5A; border: 3px solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+.map-route-dot::after {
+  content: ""; position: absolute; inset: -9px; border-radius: 50%;
+  border: 2px solid #1E9E5A; animation: pinpulse 1.8s infinite;
+}
+
+/* ---------- Toolbar + filters ---------- */
+.map-toolbar {
+  position: absolute; top: 16px; left: 16px; right: 16px; z-index: 20;
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 20px;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: var(--shadow-md);
+}
+.map-search-wrap { position: relative; flex: 1; min-width: 220px; }
+.map-toolbar .search-box { flex: 1; }
+.map-toolbar .search-box input { background: var(--surface-2); }
+
+.map-actions { display: flex; gap: 8px; align-items: center; }
+.map-actions .icon-btn { background: var(--surface-2); }
+.map-actions .icon-btn.locating { color: var(--accent-strong); }
+.spinning { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.map-search-results {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 40;
+  max-height: 320px; overflow-y: auto;
+  background: var(--glass-strong); backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px; display: flex; flex-direction: column; gap: 2px;
+}
+.map-search-result {
+  display: flex; gap: 10px; align-items: center;
+  padding: 9px 10px; border-radius: 12px;
+  border: none; background: none; width: 100%; text-align: left;
+  color: var(--text); font-size: 13px; cursor: pointer;
+  transition: background 0.12s;
+}
+.map-search-result:hover { background: var(--accent-soft); }
+.msr-ic {
+  width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+
+.map-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.map-filter {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2); color: var(--text-weak);
+  font-size: 12px; font-weight: 650; cursor: pointer;
+  transition: all 0.15s; backdrop-filter: blur(8px);
+}
+.map-filter:hover { color: var(--text); }
+.map-filter.active { background: var(--grad-ai); border-color: transparent; color: #fff; box-shadow: var(--shadow-accent); }
+.map-filter.active .filter-count { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.filter-count {
+  font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 999px;
+  background: var(--surface-3); color: var(--text-faint);
+}
+
+.map-floors {
+  width: 100%; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding-top: 4px; border-top: 1px dashed var(--border-strong);
+}
+.floor-chip {
+  padding: 5px 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2); color: var(--text-weak);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s;
+}
+.floor-chip:hover { color: var(--text); }
+.floor-chip.active { background: var(--grad-ai); border-color: transparent; color: #fff; box-shadow: var(--shadow-accent); }
+
+.map-controls { position: absolute; right: 16px; bottom: 52px; z-index: 20; display: flex; flex-direction: column; gap: 8px; }
+.map-controls .icon-btn { background: var(--glass-strong); backdrop-filter: blur(12px); }
+
+.map-legend {
+  position: absolute; left: 16px; bottom: 16px; z-index: 20;
+  min-width: 148px;
+  background: var(--glass-strong); backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+  padding: 12px 14px; box-shadow: var(--shadow-md); font-size: 12px;
+}
+.map-legend-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.16em;
+  color: var(--text-faint); margin-bottom: 6px;
+}
+.map-live { display: inline-flex; align-items: center; gap: 5px; color: var(--success); letter-spacing: 0.08em; }
+.map-live .pulse-dot { width: 6px; height: 6px; }
+.map-legend .legend-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: var(--text-weak); }
+.map-legend .legend-dot { width: 10px; height: 10px; border-radius: 5px; }
+.legend-count { margin-left: auto; color: var(--text-faint); font-size: 10.5px; font-weight: 800; }
 .map-canvas-outer { overflow: hidden; touch-action: none; cursor: grab; }
 .map-canvas-outer.dragging { cursor: grabbing; }
 .map-canvas-inner { transform-origin: 0 0; transition: transform 0.3s var(--ease); will-change: transform; }

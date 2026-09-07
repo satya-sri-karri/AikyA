@@ -1,15 +1,17 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
-import { Plus, Minus, Fullscreen, X, Navigation, Star } from "lucide-react";
+import {
+  Plus, Minus, Target, Fullscreen, X, Navigation, Star, Search, Loader2,
+} from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useUniverse, CAMPUS_CENTER } from "../lib/useUniverse.js";
+import { useUniverse, CAMPUS_CENTER, CAMPUS_GATE, getCampusConfig } from "../lib/useUniverse.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useFavorites } from "../lib/useFavorites.js";
 import { StatusBadge } from "./ui.jsx";
 import DirectionsPanel from "./DirectionsPanel.jsx";
 
 const CAT = {
-  block: { label: "Blocks", color: "#6D5EF8", icon: "🏢" },
+  block: { label: "Blocks", color: "#7C6FF0", icon: "🏢" },
   library: { label: "Library", color: "#2E7CF6", icon: "📚" },
   shop: { label: "Food", color: "#E5A00D", icon: "🍴" },
   hostel: { label: "Hostels", color: "#1E9E5A", icon: "🏠" },
@@ -25,39 +27,112 @@ const FILTERS = [
   { key: "hostel", label: "Hostels" },
   { key: "library", label: "Library" },
   { key: "ground", label: "Grounds" },
+  { key: "office", label: "Offices" },
   { key: "service", label: "Services" },
 ];
 
-// Leaflet tile layer URLs (no API key needed). Dark tiles for dark mode.
 const TILE_URL = {
   light: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
   dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
 };
 const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
-const GATE = { latitude: CAMPUS_CENTER.latitude + 0.0004, longitude: CAMPUS_CENTER.longitude - 0.0004 };
+const BOUNDS = getCampusConfig().bounds;
+
+const ROUTE_COLOR = { light: "#4F46E5", dark: "#8B9DFF" };
+const USER_COLOR = "#1E9E5A";
+const GATE_COLOR = "#E9A02B";
+
+/* ---------------------------------------------------------------
+   Helpers
+   --------------------------------------------------------------- */
+
+// Robust link between a "B Block" value and a "B Block (Computing)" POI.
+function blockMatches(value, poi) {
+  const v = (value || "").trim().toLowerCase();
+  const hay = [poi.name, poi.block, poi.description].filter(Boolean).join(" ").toLowerCase();
+  if (!v || !hay) return false;
+  const head = v.split(/\s+/)[0];
+  return hay.includes(v) || v.includes(hay) || hay.startsWith(head);
+}
+
+function floorIndex(str) {
+  const t = (str || "").trim().toLowerCase();
+  const m = /^(\d+)/.exec(t);
+  if (m) return parseInt(m[1], 10);
+  return t.includes("ground") ? 0 : -1;
+}
+
+const FLOOR_LABELS = ["Ground", "1st", "2nd", "3rd"];
+
+// Rounded-rectangle outline of the campus boundary (digital twin footprint).
+function campusFootprint() {
+  const pad = 0.00042;
+  const r = 0.00042;
+  const minLat = BOUNDS.minLat - pad, maxLat = BOUNDS.maxLat + pad;
+  const minLng = BOUNDS.minLng - pad, maxLng = BOUNDS.maxLng + pad;
+  const pts = [];
+  const arc = (cx, cy, start, end, steps = 9) => {
+    for (let i = 0; i <= steps; i++) {
+      const a = start + ((end - start) * i) / steps;
+      pts.push([cy + r * Math.sin(a), cx + r * Math.cos(a)]);
+    }
+  };
+  arc(maxLng - r, maxLat - r, Math.PI / 2, 0);
+  arc(maxLng - r, minLat + r, 0, -Math.PI / 2);
+  arc(minLng + r, minLat + r, -Math.PI / 2, Math.PI);
+  arc(minLng + r, maxLat - r, Math.PI, Math.PI / 2);
+  return pts;
+}
+
+// Compact deterministic scatter so room markers fan out around their block.
+function scatterFor(index, floordx) {
+  const col = index % 5;
+  const row = Math.floor(index / 5) % 3;
+  return {
+    dx: (col - 2) * 0.000038,
+    dy: floordx * 0.000016 + (row - 1) * 0.000034,
+  };
+}
+
+function buildRoomsIndex(departments, faculty) {
+  const map = new Map();
+  return departments.forEach
+    ? (() => {
+        for (const d of departments) {
+          for (const lab of d.labs || []) {
+            const key = d.block;
+            if (!map.has(key)) map.set(key, []);
+            map.get(key).push({ no: lab, kind: "lab", floordx: floorIndex(d.floor), block: key });
+          }
+        }
+        for (const f of faculty) {
+          const key = f.block;
+          if (!map.has(key)) map.set(key, []);
+          map.get(key).push({ no: f.cabin, kind: "cabin", floordx: floorIndex(f.floor), block: key, who: f });
+        }
+        return map;
+      })()
+    : map;
+}
+
+/* ---------------------------------------------------------------
+   Building detail panel
+   --------------------------------------------------------------- */
 
 function BuildingDetail({
   poi, faculty, departments, onClose, onNavigate, favorite, onToggleFavorite, onVisit,
 }) {
-  const blockMatches = (value) =>
-    (value || "").trim().toLowerCase() === (poi.name || "").trim().toLowerCase();
+  const depts = departments.filter((d) => blockMatches(d.block, poi));
+  const profs = faculty.filter((f) => blockMatches(f.block, poi));
 
-  useEffect(() => {
-    onVisit?.(poi);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poi._id]);
-
-  const depts = departments.filter((d) => blockMatches(d.block));
-  const profs = faculty.filter((f) => blockMatches(f.block));
-
-  // Floors present in the data for this block (from departments + faculty).
   const floors = useMemo(() => {
     const set = new Set();
     depts.forEach((d) => d.floor && set.add(d.floor));
     profs.forEach((f) => f.floor && set.add(f.floor));
     return ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor"].filter((floor) =>
-      set.has(floor) || set.size === 0);
+      set.has(floor) || set.size === 0
+    );
   }, [depts, profs]);
 
   const [floor, setFloor] = useState(floors[0] || "Ground Floor");
@@ -65,6 +140,11 @@ function BuildingDetail({
     setFloor(floors[0] || "Ground Floor");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [poi._id]);
+  useEffect(() => {
+    onVisit?.(poi);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poi._id]);
+
   const onFloorProfs = profs.filter((f) => (f.floor || "").toLowerCase() === (floor || "").toLowerCase());
   const onFloorDepts = depts.filter((d) => (d.floor || "").toLowerCase() === (floor || "").toLowerCase());
   const roomsOnFloor = [
@@ -123,7 +203,7 @@ function BuildingDetail({
           </div>
         )}
 
-        {(poi.type === "block" || (depts.length || profs.length)) && (
+        {(poi.type === "block" || depts.length || profs.length) && (
           <>
             <h4>Floors</h4>
             <div className="floor-selector">
@@ -179,7 +259,7 @@ function BuildingDetail({
           </>
         )}
 
-        <div style={{ marginTop: "auto", display: "flex", gap: 8, paddingTop: 8 }}>
+        <div style={{ marginTop: "auto", display: "flex", gap: 8, paddingTop: 8, flexWrap: "wrap" }}>
           {poi.latitude != null && (
             <a
               className="btn btn-soft"
@@ -187,7 +267,7 @@ function BuildingDetail({
               target="_blank"
               rel="noreferrer"
             >
-              <Navigation size={15} /> Open in Google Maps
+              <Navigation size={15} /> Google Maps
             </a>
           )}
           <button className="btn btn-primary" onClick={() => onNavigate(poi)}>
@@ -198,6 +278,10 @@ function BuildingDetail({
     </div>
   );
 }
+
+/* ---------------------------------------------------------------
+   CampusMap
+   --------------------------------------------------------------- */
 
 export default function CampusMap({ mode = "page", onNavigate, height }) {
   const { data } = useUniverse();
@@ -211,12 +295,18 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState(null);
   const [routeTarget, setRouteTarget] = useState(null);
+  const [userLoc, setUserLoc] = useState(null);
+  const [locating, setLocating] = useState(false);
+  const [indoor, setIndoor] = useState(false);
+  const [floor, setFloor] = useState("all");
 
   const shellRef = useRef(null);
   const mapRef = useRef(null);
-  const layerRef = useRef(null);
+  const poiLayerRef = useRef(null);
+  const staticRef = useRef(null);
+  const routeRef = useRef(null);
 
-  /* Build the Leaflet map once. */
+  /* ---------- init ---------- */
   useEffect(() => {
     const el = shellRef.current;
     if (!el || mapRef.current) return;
@@ -231,39 +321,100 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
     });
     mapRef.current = map;
 
-    const tile = L.tileLayer(TILE_URL[theme === "dark" ? "dark" : "light"], {
+    L.tileLayer(TILE_URL[theme === "dark" ? "dark" : "light"], {
       attribution: TILE_ATTRIBUTION,
       maxZoom: 20,
-    });
-    tile.addTo(map);
+    }).addTo(map);
 
-    map.on("click", () => setSelected(null));
+    L.control.scale({ imperial: false, position: "bottomright" }).addTo(map);
+
+    map.on("zoomend", () => {
+      el.classList.toggle("zoom-far", map.getZoom() < 15.5);
+    });
+
+    const toggleZoomFar = () => el.classList.toggle("zoom-far", map.getZoom() < 15.5);
+    toggleZoomFar();
+
+    let ro;
+    try {
+      ro = new ResizeObserver(() => map.invalidateSize());
+      ro.observe(el);
+    } catch { /* older browsers */ }
 
     return () => {
+      ro?.disconnect();
       map.remove();
       mapRef.current = null;
-      layerRef.current = null;
+      poiLayerRef.current = null;
+      staticRef.current = null;
+      routeRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* Keep the tile layer in sync with the theme. */
+  /* ---------- static overlay: footprint, road, gate ---------- */
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    let tile;
-    map.eachLayer((l) => {
-      if (l instanceof L.TileLayer) tile = l;
-    });
-    if (tile) {
-      map.removeLayer(tile);
-      L.tileLayer(TILE_URL[theme === "dark" ? "dark" : "light"], {
-        attribution: TILE_ATTRIBUTION,
-        maxZoom: 20,
-      }).addTo(map);
+    if (staticRef.current) {
+      map.removeLayer(staticRef.current);
+      staticRef.current = null;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const layer = L.layerGroup();
+
+    const dark = theme === "dark";
+    L.polygon(campusFootprint(), {
+      color: dark ? "#8B9DFF" : "#6D5EF8",
+      weight: 1.6,
+      dashArray: "4 7",
+      lineCap: "round",
+      opacity: dark ? 0.55 : 0.5,
+      fillColor: dark ? "#151F36" : "#6D5EF8",
+      fillOpacity: dark ? 0.10 : 0.055,
+      interactive: false,
+    }).addTo(layer);
+
+    const roadLat = CAMPUS_GATE.latitude - 0.00038;
+    L.polyline(
+      [
+        [roadLat, BOUNDS.minLng + 0.0009],
+        [roadLat, BOUNDS.maxLng - 0.0009],
+      ],
+      {
+        color: dark ? "#C9A24B" : "#C9973F",
+        weight: 4,
+        opacity: dark ? 0.4 : 0.5,
+      }
+    ).addTo(layer);
+    L.polyline(
+      [
+        [roadLat, BOUNDS.minLng + 0.0009],
+        [roadLat, BOUNDS.maxLng - 0.0009],
+      ],
+      {
+        color: dark ? "#F0CD83" : "#E9C072",
+        weight: 1.2,
+        opacity: 0.85,
+        dashArray: "1 10",
+      }
+    ).addTo(layer);
+
+    const gateIcon = L.divIcon({
+      className: "map-gate-shell",
+      html: `<div class="map-gate"><span class="map-gate-icon"></span><span class="map-gate-label">Main Gate</span></div>`,
+      iconSize: [0, 0],
+    });
+    L.marker([CAMPUS_GATE.latitude, CAMPUS_GATE.longitude], {
+      icon: gateIcon, zIndexOffset: 900, interactive: false,
+    }).addTo(layer);
+
+    staticRef.current = layer;
+    layer.addTo(map);
   }, [theme]);
+
+  /* ---------- POI + indoor markers ---------- */
+  const roomsIndex = useMemo(() => buildRoomsIndex(departments, faculty), [departments, faculty]);
 
   const visible = useCallback(
     (poi) => {
@@ -279,46 +430,159 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
     [filter, q]
   );
 
-  /* Draw markers whenever POIs / filters / selection change. */
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    if (layerRef.current) {
-      map.removeLayer(layerRef.current);
-      layerRef.current = null;
+    if (poiLayerRef.current) {
+      map.removeLayer(poiLayerRef.current);
+      poiLayerRef.current = null;
     }
+
     const layer = L.layerGroup();
+
+    // Indoor room markers (faculty cabins + labs).
+    if (indoor) {
+      pois.forEach((poi) => {
+        const rooms = (roomsIndex.get(poi.block) || []).filter((r) =>
+          floor === "all" || r.floordx === floor
+        );
+        if (poi.latitude == null || poi.longitude == null || !rooms.length) return;
+        rooms.slice(0, 14).forEach((r, i) => {
+          const { dx, dy } = scatterFor(i, r.floordx);
+          const ink = r.kind === "lab" ? "#2E7CF6" : "#8A7BFF";
+          const label =
+            r.kind === "lab"
+              ? r.no.replace(/\s+(Lab(laboratory)?)?$/i, "")
+              : r.who ? `${r.who.name.split(" ").slice(-1)[0]} · ${r.no}` : r.no;
+          const icon = L.divIcon({
+            className: "indoor-shell",
+            html: `<div class="indoor-marker" style="--ink:${ink}"><span class="indoor-head">${r.no}</span><span class="indoor-label">${label}</span></div>`,
+            iconSize: [0, 0],
+          });
+          const marker = L.marker([poi.latitude + dy, poi.longitude + dx], {
+            icon, title: r.no, zIndexOffset: 400, interactive: false,
+          });
+          marker.addTo(layer);
+        });
+      });
+    }
+
+    // Building / POI markers.
     pois.forEach((poi) => {
       if (poi.latitude == null || poi.longitude == null) return;
+      if (!visible(poi)) return;
       const meta = CAT[poi.type] || CAT.office;
       const isSel = selected?._id === poi._id;
-      const isVisible = visible(poi);
-      if (!isVisible) return;
 
       const icon = L.divIcon({
         className: "map-marker-shell",
         html: `
-          <div class="map-marker${isSel ? " selected" : ""}" style="--dot:${meta.color}">
-            <span class="marker-icon">${isSel ? `<span class="marker-ping" style="--dot:${meta.color}"></span>` : ""}${meta.icon}</span>
-            <span class="marker-label">${poi.name}</span>
+          <div class="map-marker${isSel ? " selected" : ""}" style="--dot:${meta.color};--icon:${meta.icon}">
+            <span class="marker-pin"><span class="marker-pin-dot">${meta.icon}</span></span>
+            <span class="marker-label"><i class="ml-dot" style="background:${meta.color};box-shadow:0 0 6px ${meta.color}"></i>${poi.name}</span>
           </div>`,
         iconSize: [0, 0],
         iconAnchor: [0, 0],
       });
 
-      const marker = L.marker([poi.latitude, poi.longitude], { icon, title: poi.name, zIndexOffset: isSel ? 1000 : 0 });
-      marker.on("click", () => setSelected(poi));
+      const marker = L.marker([poi.latitude, poi.longitude], {
+        icon, title: poi.name, zIndexOffset: isSel ? 1000 : 0,
+      });
+      marker.on("click", (e) => {
+        L.DomEvent.stopPropagation(e);
+        setSelected(poi);
+      });
+      marker.bindTooltip(`${meta.icon} ${poi.name}`, {
+        className: "map-tip", direction: "top", offset: [0, -40], opacity: 1,
+      });
       marker.addTo(layer);
     });
-    layer.addTo(map);
-    layerRef.current = layer;
-  }, [pois, visible, selected]);
 
-  const zoomBy = useCallback((dir) => {
+    layer.addTo(map);
+    poiLayerRef.current = layer;
+  }, [pois, visible, selected, indoor, floor, roomsIndex]);
+
+  /* ---------- user location + route drawing ---------- */
+  useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.zoomIn(dir);
-  }, []);
+    if (routeRef.current) {
+      map.removeLayer(routeRef.current);
+      routeRef.current = null;
+    }
+    const dark = theme === "dark";
+    const routeColor = ROUTE_COLOR[dark ? "dark" : "light"];
+
+    const dest =
+      routeTarget?.latitude != null && routeTarget?.longitude != null
+        ? L.latLng(routeTarget.latitude, routeTarget.longitude)
+        : null;
+    const orig =
+      userLoc?.latitude != null
+        ? L.latLng(userLoc.latitude, userLoc.longitude)
+        : dest
+          ? L.latLng(CAMPUS_GATE.latitude, CAMPUS_GATE.longitude)
+          : null;
+
+    if (!orig && !dest) return;
+    const layer = L.layerGroup();
+
+    // "You are here" marker.
+    if (userLoc?.latitude != null) {
+      if (userLoc.accuracy) {
+        L.circle([userLoc.latitude, userLoc.longitude], {
+          radius: userLoc.accuracy,
+          color: USER_COLOR, weight: 1.2, opacity: 0.55,
+          fillColor: USER_COLOR, fillOpacity: 0.08,
+        }).addTo(layer);
+      }
+      L.marker([userLoc.latitude, userLoc.longitude], {
+        icon: L.divIcon({
+          className: "route-shell",
+          html: `<div class="map-route-dot"></div>`,
+          iconSize: [0, 0],
+        }),
+        zIndexOffset: 950,
+      }).addTo(layer);
+    }
+
+    // Route polyline + destination marker.
+    if (orig && dest) {
+      L.polyline([orig, dest], {
+        color: routeColor,
+        weight: 3.5,
+        opacity: 0.85,
+        dashArray: "2 9",
+        lineCap: "round",
+      }).addTo(layer);
+      L.circleMarker(orig, {
+        radius: 5, color: routeColor, weight: 2,
+        fillColor: routeColor, fillOpacity: 0.9,
+      }).addTo(layer);
+      L.circleMarker(dest, {
+        radius: 8, color: "#fff", weight: 2,
+        fillColor: routeColor, fillOpacity: 0.9,
+      }).addTo(layer);
+    }
+
+    layer.addTo(map);
+    routeRef.current = layer;
+
+    if (orig && dest) {
+      map.fitBounds(L.latLngBounds([orig, dest]).pad(0.32), { animate: true });
+    }
+  }, [routeTarget, userLoc, theme]);
+
+  /* ---------- panel / container resize handling ---------- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const t = setTimeout(() => map.invalidateSize(), 250);
+    return () => clearTimeout(t);
+  }, [selected, routeTarget]);
+
+  /* ---------- controls ---------- */
+  const zoomBy = useCallback((dir) => mapRef.current?.zoomIn(dir), []);
 
   const resetView = () => {
     const map = mapRef.current;
@@ -326,35 +590,146 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
     map.flyTo([CAMPUS_CENTER.latitude, CAMPUS_CENTER.longitude], 16);
   };
 
-  const mapHeight = height || (mode === "dashboard" ? 340 : undefined);
+  const toggleFullscreen = () => {
+    const el = shellRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) document.exitFullscreen();
+    else el.requestFullscreen?.();
+  };
 
+  const setMyLocation = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        setUserLoc({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+          name: "Your location",
+        });
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 20000 }
+    );
+  };
+
+  const searchMatches = useMemo(() => {
+    const qq = q.trim().toLowerCase();
+    if (!qq) return [];
+    return pois
+      .filter((p) => p.latitude != null)
+      .filter((p) =>
+        (p.name || "").toLowerCase().includes(qq) ||
+        (p.block || "").toLowerCase().includes(qq) ||
+        (p.description || "").toLowerCase().includes(qq) ||
+        (CAT[p.type]?.label || "").toLowerCase().includes(qq)
+      )
+      .slice(0, 8);
+  }, [q, pois]);
+
+  const pickSearch = (poi) => {
+    setQ("");
+    setFilter("all");
+    setSelected(poi);
+    mapRef.current?.flyTo([poi.latitude, poi.longitude], 17);
+  };
+
+  const counts = useMemo(() => {
+    const c = { all: pois.length };
+    Object.keys(CAT).forEach((k) => (c[k] = pois.filter((p) => p.type === k).length));
+    return c;
+  }, [pois]);
+
+  const floorsAvailable = useMemo(() => {
+    const set = new Set();
+    departments.forEach((d) => floorIndex(d.floor) >= 0 && set.add(floorIndex(d.floor)));
+    faculty.forEach((f) => floorIndex(f.floor) >= 0 && set.add(floorIndex(f.floor)));
+    return [0, 1, 2, 3].filter((fi) => set.has(fi));
+  }, [departments, faculty]);
+
+  const mapHeight = height || (mode === "dashboard" ? 340 : undefined);
   const legendRows = Object.entries(CAT).filter(([k]) =>
-    mode === "dashboard" ? ["block", "shop", "hostel", "library"].includes(k) : pois.some((p) => p.type === k)
+    mode === "dashboard"
+      ? ["block", "shop", "hostel", "library"].includes(k)
+      : pois.some((p) => p.type === k)
   );
 
   return (
-    <div className="map-shell" style={mapHeight ? { height: mapHeight } : { height: "min(72vh, 680px)" }}>
+    <div className="map-shell" style={mapHeight ? { height: mapHeight } : { height: "min(76vh, 720px)" }}>
       {mode === "page" && (
         <div className="map-toolbar">
-          <div className="search-box" style={{ flex: 1 }}>
-            <span className="search-icon">🔍</span>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Filter markers on the map…"
-            />
+          <div className="map-search-wrap">
+            <div className="search-box" style={{ flex: 1 }}>
+              <span className="search-icon"><Search size={16} /></span>
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && searchMatches[0] && pickSearch(searchMatches[0])}
+                placeholder="Search buildings, blocks, food…"
+                aria-label="Search on map"
+              />
+            </div>
+            {searchMatches.length > 0 && (
+              <div className="map-search-results">
+                {searchMatches.map((p) => (
+                  <button key={p._id} className="map-search-result" onClick={() => pickSearch(p)}>
+                    <span className="msr-ic" style={{ background: (CAT[p.type]?.color || "#888") + "22" }}>{CAT[p.type]?.icon || "📍"}</span>
+                    <span>
+                      <strong style={{ fontSize: 13, display: "block" }}>{p.name}</strong>
+                      <span className="muted" style={{ fontSize: 11.5 }}>{CAT[p.type]?.label}{p.openHours ? ` · ${p.openHours}` : ""}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="map-filters">
+
+          <div className="map-actions">
+            <button
+              className={`icon-btn${locating ? " locating" : ""}`}
+              onClick={setMyLocation}
+              title="Show my location"
+              aria-label="My location"
+            >
+              {locating ? <Loader2 size={16} className="spinning" /> : <Target size={16} />}
+            </button>
+            <button className="icon-btn" onClick={toggleFullscreen} title="Fullscreen" aria-label="Fullscreen">
+              <Fullscreen size={16} />
+            </button>
+            <button
+              className={`map-filter${indoor ? " active" : ""}`}
+              onClick={() => setIndoor((v) => !v)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              🚪 Indoor
+            </button>
+          </div>
+
+          <div className="map-filters" style={{ width: "100%" }}>
             {FILTERS.map((f) => (
               <button
                 key={f.key}
                 className={`map-filter${filter === f.key ? " active" : ""}`}
                 onClick={() => setFilter(f.key)}
               >
-                {f.label}
+                {f.label}<span className="filter-count">{counts[f.key]}</span>
               </button>
             ))}
           </div>
+
+          {indoor && (
+            <div className="map-floors">
+              <span className="micro" style={{ opacity: 0.7 }}>Level</span>
+              <button className={`floor-chip${floor === "all" ? " active" : ""}`} onClick={() => setFloor("all")}>All</button>
+              {floorsAvailable.map((fi) => (
+                <button key={fi} className={`floor-chip${floor === fi ? " active" : ""}`} onClick={() => setFloor(fi)}>
+                  {FLOOR_LABELS[fi]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -369,14 +744,18 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
           <div className="map-controls">
             <button className="icon-btn" onClick={() => zoomBy(1)} title="Zoom in"><Plus size={17} /></button>
             <button className="icon-btn" onClick={() => zoomBy(-1)} title="Zoom out"><Minus size={17} /></button>
-            <button className="icon-btn" onClick={resetView} title="Reset view"><Fullscreen size={16} /></button>
+            <button className="icon-btn" onClick={resetView} title="Recenter campus"><Target size={16} /></button>
           </div>
           <div className="map-legend">
-            <div className="micro" style={{ marginBottom: 6 }}>Legend</div>
+            <div className="map-legend-head">
+              <span>SURAMPALEM</span>
+              <span className="map-live"><i className="pulse-dot" /> LIVE</span>
+            </div>
             {legendRows.map(([k, m]) => (
               <div key={k} className="legend-row">
                 <span className="legend-dot" style={{ background: m.color }} />
                 {m.label}
+                <span className="legend-count">{counts[k]}</span>
               </div>
             ))}
           </div>
@@ -390,7 +769,7 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
             Campus markers
           </div>
           <div className="legend-row">
-            <span className="legend-dot" style={{ background: "#E5A00D" }} />
+            <span className="legend-dot" style={{ background: GATE_COLOR }} />
             Tap a marker for details
           </div>
         </div>
@@ -412,7 +791,8 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
       {routeTarget && (
         <DirectionsPanel
           target={routeTarget}
-          origin={GATE}
+          origin={userLoc}
+          onLocate={setUserLoc}
           onClose={() => setRouteTarget(null)}
         />
       )}
