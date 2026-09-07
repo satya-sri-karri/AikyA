@@ -10,7 +10,7 @@ export default function Faculty() {
   const [avail, setAvail] = useState("all");
   const navigate = useNavigate();
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { refresh("faculty"); }, []);
 
   const faculty = data.faculty || [];
   const departments = useMemo(() => [...new Set(faculty.map((f) => f.departmentName).filter(Boolean))], [faculty]);
