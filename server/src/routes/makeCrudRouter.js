@@ -1,12 +1,16 @@
 const express = require("express");
+const { requireAuth } = require("../middleware/auth");
 
 /**
  * Creates a basic CRUD router for a given Mongoose model.
- * GET    /            -> list all
- * GET    /:id         -> get one
- * POST   /            -> create (admin panel uses this)
- * PUT    /:id         -> update (admin panel uses this)
- * DELETE /:id         -> delete (admin panel uses this)
+ * GET    /            -> list all          (public)
+ * GET    /:id         -> get one           (public)
+ * POST   /            -> create            (admin only)
+ * PUT    /:id         -> update            (admin only)
+ * DELETE /:id         -> delete            (admin only)
+ *
+ * Write routes are protected by JWT auth (admin login); reads stay public so
+ * the map, directories and chat continue to work for everyone.
  */
 function makeCrudRouter(Model) {
   const router = express.Router();
@@ -30,7 +34,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", requireAuth, async (req, res) => {
     try {
       const item = await Model.create(req.body);
       res.status(201).json(item);
@@ -39,7 +43,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.put("/:id", async (req, res) => {
+  router.put("/:id", requireAuth, async (req, res) => {
     try {
       const item = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
@@ -52,7 +56,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", requireAuth, async (req, res) => {
     try {
       const item = await Model.findByIdAndDelete(req.params.id);
       if (!item) return res.status(404).json({ error: "Not found" });

@@ -11,6 +11,7 @@ const BusRoute = require("./models/BusRoute");
 const Event = require("./models/Event");
 
 const chatRoutes = require("./routes/chat");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/poi", makeCrudRouter(PointOfInterest));
 app.use("/api/buses", makeCrudRouter(BusRoute));
 app.use("/api/events", makeCrudRouter(Event));
 app.use("/api/chat", chatRoutes);
+app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
