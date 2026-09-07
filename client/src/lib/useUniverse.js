@@ -84,3 +84,24 @@ function clampToCanvas(x, y, cfg) {
     y: Math.min(Math.max(y, 20), cfg.canvasHeight - 40),
   };
 }
+
+// Inverse of projectPOI: canvas coordinate -> lat/lng (used for the map's Main Gate anchor).
+export function unproject(x, y, cfg) {
+  const { minLat, maxLat, minLng, maxLng } = cfg.bounds;
+  const lng = minLng + (x / cfg.canvasWidth) * (maxLng - minLng);
+  const lat = maxLat - (y / cfg.canvasHeight) * (maxLat - minLat);
+  return { latitude: lat, longitude: lng };
+}
+
+// Haversine distance in meters between two {latitude, longitude} points.
+export function distanceMeters(a, b) {
+  if (!a || !b || a.latitude == null || b.latitude == null) return null;
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b.latitude - a.latitude);
+  const dLng = toRad(b.longitude - a.longitude);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.latitude)) * Math.cos(toRad(b.latitude)) * Math.sin(dLng / 2) ** 2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(h)));
+}

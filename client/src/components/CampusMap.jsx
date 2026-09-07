@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
-import { Plus, Minus, Fullscreen, X, Navigation } from "lucide-react";
+import { Plus, Minus, Fullscreen, X, Navigation, Star } from "lucide-react";
 import { useUniverse, projectPOI, getCampusConfig } from "../lib/useUniverse.js";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useFavorites } from "../lib/useFavorites.js";
 import { StatusBadge } from "./ui.jsx";
+import DirectionsPanel from "./DirectionsPanel.jsx";
 
 const CAT = {
   block: { label: "Blocks", color: "#6D5EF8", icon: "🏢" },
@@ -92,10 +94,15 @@ function BlockShape({ poi, pos, color, dimmed, selected, onSelect }) {
 }
 
 function BuildingDetail({
-  poi, faculty, departments, onClose, onNavigate,
+  poi, faculty, departments, onClose, onNavigate, favorite, onToggleFavorite, onVisit,
 }) {
   const blockMatches = (value) =>
     (value || "").trim().toLowerCase() === (poi.name || "").trim().toLowerCase();
+
+  useEffect(() => {
+    onVisit?.(poi);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poi._id]);
 
   const depts = departments.filter((d) => blockMatches(d.block));
   const profs = faculty.filter((f) => blockMatches(f.block));
@@ -125,6 +132,15 @@ function BuildingDetail({
     <div className="map-detail">
       <button className="icon-btn map-detail-close" onClick={onClose}><X size={16} /></button>
       <div className="map-detail-head">
+        <div style={{ position: "absolute", top: 42, right: 12, display: "flex", gap: 6 }}>
+          <button
+            className={`icon-btn${favorite ? " active-fav" : ""}`}
+            onClick={() => onToggleFavorite(poi)}
+            title={favorite ? "Remove from favorites" : "Save to favorites"}
+          >
+            <Star size={16} style={{ color: favorite ? "var(--warning)" : "var(--text-faint)", fill: favorite ? "var(--warning)" : "none" }} />
+          </button>
+        </div>
         <StatusBadge status={poi.isOpenNow ? "open" : "closed"} />
         <h2 style={{ fontSize: 22, margin: "8px 0 4px", paddingRight: 30 }}>{poi.name}</h2>
         <p className="muted">{poi.description || CAT[poi.type]?.label}</p>
@@ -232,6 +248,7 @@ function BuildingDetail({
 export default function CampusMap({ mode = "page", onNavigate, height }) {
   const { data } = useUniverse();
   const { theme } = useTheme();
+  const { isFavorite, toggleFavorite, recordVisit } = useFavorites();
   const pois = data.pois || [];
   const buses = data.buses || [];
   const faculty = data.faculty || [];
@@ -240,6 +257,7 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
   const [filter, setFilter] = useState("all");
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState(null);
+  const [routeTarget, setRouteTarget] = useState(null);
   const [view, setView] = useState({ k: 1, tx: 0, ty: 0 });
   const outerRef = useRef(null);
   const dragRef = useRef(null);
@@ -465,9 +483,16 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
           poi={selected}
           faculty={faculty}
           departments={departments}
+          favorite={isFavorite(selected._id)}
+          onToggleFavorite={toggleFavorite}
+          onVisit={recordVisit}
           onClose={() => setSelected(null)}
-          onNavigate={(poi) => onNavigate?.(poi)}
+          onNavigate={(poi) => (mode === "page" ? setRouteTarget(poi) : onNavigate?.(poi))}
         />
+      )}
+
+      {routeTarget && (
+        <DirectionsPanel target={routeTarget} onClose={() => setRouteTarget(null)} />
       )}
     </div>
   );

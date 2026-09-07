@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Navigation, Users, UtensilsCrossed, BookOpen, Bus, CalendarDays } from "lucide-react";
+import { Navigation, Users, UtensilsCrossed, BookOpen, Bus, CalendarDays, Star } from "lucide-react";
 import { useUniverse } from "../lib/useUniverse.js";
+import { useFavorites } from "../lib/useFavorites.js";
 import CampusMap from "../components/CampusMap.jsx";
 import GlobalSearch from "../components/GlobalSearch.jsx";
 import { Counter, EmptyState } from "../components/ui.jsx";
@@ -16,6 +17,10 @@ const QUICK_ACTIONS = [
   { label: "Events", icon: CalendarDays, to: "/events" },
 ];
 
+const CAT_ICON = {
+  block: "🏢", library: "📚", shop: "🍴", hostel: "🏠", ground: "🌳", office: "🏛️", service: "🩺",
+};
+
 function greeting() {
   const h = new Date().getHours();
   if (h < 5) return "Good night";
@@ -27,6 +32,7 @@ function greeting() {
 export default function Dashboard() {
   const { data, loading } = useUniverse();
   const navigate = useNavigate();
+  const { favorites, recents, clearRecents } = useFavorites();
   const pois = data.pois || [];
   const buses = data.buses || [];
   const faculty = data.faculty || [];
@@ -84,6 +90,34 @@ export default function Dashboard() {
           </motion.div>
         ))}
       </div>
+
+      {(favorites.length > 0 || recents.length > 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, duration: 0.4 }}
+          style={{ marginBottom: 26 }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            {favorites.length > 0 && <Star size={14} style={{ color: "var(--warning)" }} />}
+            <h2 style={{ fontSize: 16 }}>
+              {favorites.length > 0 ? "Favorite spots" : "Recently viewed"}
+            </h2>
+            {recents.length > 0 && favorites.length === 0 && (
+              <button onClick={clearRecents} className="muted" style={{ marginLeft: "auto", fontSize: 12, background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
+                Clear
+              </button>
+            )}
+          </div>
+          <div className="chip-row">
+            {(favorites.length > 0 ? favorites : recents).map((p) => (
+              <Link key={p._id} to="/map" className="chip">
+                {(CAT_ICON[p.type] || "📍")}&nbsp;{p.name}
+              </Link>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       <div className="stat-grid" style={{ marginBottom: 26 }}>
         {STATS.map((s, i) => (

@@ -183,6 +183,39 @@ input, textarea, select { font-family: inherit; }
 
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
+.notif { position: relative; }
+.notif-dot {
+  position: absolute; top: 7px; right: 8px; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--danger);
+  border: 2px solid var(--bg-elev);
+}
+.notif-panel {
+  position: absolute; right: 0; top: calc(100% + 10px); width: min(330px, 82vw);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+  z-index: 60;
+}
+.notif-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.notif-list { max-height: 340px; overflow: auto; padding: 6px; }
+.notif-item {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 10px;
+  border-radius: 12px; text-decoration: none; color: var(--text);
+  transition: background 0.15s;
+}
+.notif-item:hover { background: var(--surface-2); }
+.notif-ic {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent-strong); font-size: 13px;
+}
+
 .breadcrumbs {
   display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-faint);
   overflow: hidden; white-space: nowrap;
@@ -572,6 +605,11 @@ input, textarea, select { font-family: inherit; }
 }
 .chip:hover { border-color: var(--accent); color: var(--text); }
 .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+a.chip { text-decoration: none; }
+a.chip:hover { text-decoration: none; }
+
+.icon-btn.active-fav { background: var(--warning-soft); border-color: var(--warning); }
 
 /* ============================================================
    RICH CARDS (faculty / food / event / bus / hostel)

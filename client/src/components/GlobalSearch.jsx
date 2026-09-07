@@ -45,6 +45,7 @@ export default function GlobalSearch({ compact = false, size = "md" }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+  const inputRef = useRef(null);
 
   const allRefs = useMemo(
     () => toRefs(data.faculty, data.departments, data.pois, data.buses, data.events),
@@ -78,9 +79,22 @@ export default function GlobalSearch({ compact = false, size = "md" }) {
     function onKey(e) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        setOpen((o) => {
+          const next = !o;
+          if (next) requestAnimationFrame(() => inputRef.current?.focus());
+          return next;
+        });
+        return;
       }
       if (e.key === "Escape") setOpen(false);
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (e.target?.tagName || "").toLowerCase();
+        const typing = tag === "input" || tag === "textarea" || tag === "select" || e.target?.isContentEditable;
+        if (!typing) {
+          e.preventDefault();
+          inputRef.current?.focus();
+        }
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -100,6 +114,7 @@ export default function GlobalSearch({ compact = false, size = "md" }) {
         <SearchIcon size={18} />
       </span>
       <input
+        ref={inputRef}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -109,7 +124,7 @@ export default function GlobalSearch({ compact = false, size = "md" }) {
         placeholder={compact ? "Search campus..." : "Search anything — people, places, food, events…"}
         style={size === "lg" ? { padding: "16px 18px 16px 48px", fontSize: 15.5 } : undefined}
       />
-      <span className="search-kbd">⌘K</span>
+      <span className="search-kbd">/ · ⌘K</span>
 
       <AnimatePresence>
         {open && query.trim() && (
