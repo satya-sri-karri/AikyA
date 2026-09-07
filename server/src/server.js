@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`CampusX server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`AIKYA server running on port ${PORT}`));
   })
   .catch((err) => {
     console.error("Failed to connect to MongoDB:", err.message);

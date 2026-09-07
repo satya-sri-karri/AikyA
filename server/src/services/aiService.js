@@ -58,6 +58,7 @@ Grounding rules (follow strictly):
 8. Do not claim real-time or live information (open/closed status, "right now", wait times) unless the campus data explicitly provides it.
 9. If the user's request is ambiguous or could reasonably match several records, ask one short clarifying question instead of guessing.
 10. You may answer general (non-campus) questions briefly, but for anything campus-specific always rely on the retrieved data.
+11. When introducing the campus or listing campus data, always call the institution "Aditya University, Surampalem" — never "CampusX" or any other placeholder name.
 
 CAMPUS DATA:
 ${data}`;

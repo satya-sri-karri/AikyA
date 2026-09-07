@@ -695,7 +695,7 @@ async function seed() {
       title: "IGNITE 2026 - Coder Dot. Connect",
       description:
         "The flagship technical skill-development program by the Centre for Technical Training. Daily coding challenges, hands-on sessions and mentor connect for all branches and years.",
-      date: "2026-09-02",
+      date: "2026-09-15",
       startTime: "10:00 AM",
       endTime: "4:00 PM",
       venue: "Centre for Technical Training, B Block",
@@ -707,7 +707,7 @@ async function seed() {
       title: "AP State-wide Quantum Awareness Program",
       description:
         "A state-wide awareness session on quantum computing and quantum technologies organised for engineering and computing students.",
-      date: "2026-09-02",
+      date: "2026-09-16",
       startTime: "10:00 AM",
       endTime: "1:00 PM",
       venue: "Main Auditorium",
@@ -719,7 +719,7 @@ async function seed() {
       title: "Internal Hackathon for Smart India Hackathon 2026",
       description:
         "University-level internal hackathon to shortlist teams for Smart India Hackathon 2026, with problem statements across smart automation, healthcare, and sustainability.",
-      date: "2026-09-01",
+      date: "2026-09-18",
       startTime: "9:00 AM",
       endTime: "5:00 PM",
       venue: "AGBI Innovation Hub",
@@ -731,7 +731,7 @@ async function seed() {
       title: "MOU Exchange & Orientation - IDP Education",
       description:
         "Memorandum of understanding exchange and orientation session with IDP Education for IELTS preparation and international study opportunities (Australia, UK, Canada).",
-      date: "2026-09-03",
+      date: "2026-09-17",
       startTime: "11:00 AM",
       endTime: "1:00 PM",
       venue: "Seminar Hall, A Block",
@@ -743,7 +743,7 @@ async function seed() {
       title: "Parents & Students Orientation - I B.Pharm & I Pharm.D",
       description:
         "Orientation for first-year pharmacy students and their parents covering curriculum, attendance, hostel and campus life.",
-      date: "2026-08-31",
+      date: "2026-09-23",
       startTime: "10:00 AM",
       endTime: "12:00 PM",
       venue: "Pharmacy Block",
@@ -755,7 +755,7 @@ async function seed() {
       title: "Alumni Interaction - Careers in Civil Engineering",
       description:
         "Session with alumni working in construction, structural design and infrastructure to guide final-year Civil Engineering students on career paths.",
-      date: "2026-08-31",
+      date: "2026-09-24",
       startTime: "2:00 PM",
       endTime: "3:30 PM",
       venue: "E Block Seminar Hall",
@@ -767,7 +767,7 @@ async function seed() {
       title: "Alumni Interaction - Smart Factories & Digital Manufacturing",
       description:
         "Alumni-led session on Industry 4.0, smart factories and digital manufacturing for Mechanical Engineering students.",
-      date: "2026-08-31",
+      date: "2026-09-25",
       startTime: "2:00 PM",
       endTime: "3:30 PM",
       venue: "E Block Seminar Hall",
@@ -779,7 +779,7 @@ async function seed() {
       title: "Telugu Bhasha Dinotsavam 2026",
       description:
         "Celebration of Telugu Language Day with literary competitions, poetry recitals and classical music at the Knowledge Resource Centre.",
-      date: "2026-08-29",
+      date: "2026-09-30",
       startTime: "4:00 PM",
       endTime: "6:00 PM",
       venue: "Knowledge Resource Centre",
