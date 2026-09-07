@@ -1,6 +1,6 @@
 import { NavLink, Link } from "react-router-dom";
 import {
-  Home, Map, Users, Building2, UtensilsCrossed, Bus, Hotel, CalendarDays, ShieldCheck, PanelsLeftBottom,
+  Home, Map, Users, Building2, UtensilsCrossed, Bus, Hotel, CalendarDays, ShieldCheck, PanelsLeftBottom, Sparkles,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -31,7 +31,7 @@ export const NAV_SECTIONS = [
 ];
 
 export const MOBILE_NAV = [
-  { to: "/", label: "Home", icon: Home, end: true },
+  { to: "/", label: "Home", icon: Sparkles, end: true },
   { to: "/map", label: "Explore", icon: Map },
   { to: "/canteen", label: "Food", icon: UtensilsCrossed },
   { to: "/events", label: "Events", icon: CalendarDays },
@@ -59,8 +59,8 @@ export function SidebarLinks() {
 export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose }) {
   return (
     <>
-      {/* Desktop / tablet sidebar */}
-      <aside className={`sidebar${collapsed ? " collapsed" : ""}`}>
+      {mobileOpen && <div className="sidebar-backdrop" onClick={onMobileClose} aria-hidden />}
+      <aside className={`sidebar${collapsed ? " collapsed" : ""}${mobileOpen ? " open" : ""}`}>
         <Link to="/" className="sidebar-logo">
           <span className="sidebar-logo-mark">✦</span>
           <span className="sidebar-logo-text">AIKYA</span>
@@ -81,18 +81,6 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMob
           <span className="micro">ONE CAMPUS · CONNECTED</span>
         </div>
       </aside>
-
-      {/* Mobile slide-out drawer */}
-      <div className={`mobile-drawer${mobileOpen ? " open" : ""}`}>
-        <div className="mobile-drawer-backdrop" onClick={onMobileClose} />
-        <div className="mobile-drawer-panel">
-          <Link to="/" className="sidebar-logo" onClick={onMobileClose}>
-            <span className="sidebar-logo-mark">✦</span>
-            <span className="sidebar-logo-text">AIKYA</span>
-          </Link>
-          {(<SidebarLinks />)}
-        </div>
-      </div>
     </>
   );
 }
