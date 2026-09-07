@@ -22,7 +22,7 @@ function AppShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <>
+    <div className="app-shell">
       <Sidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((c) => !c)}
@@ -36,7 +36,7 @@ function AppShell({ children }) {
       <BottomNav />
       <ChatWidget />
       <EmergencyFab />
-    </>
+    </div>
   );
 }
 
