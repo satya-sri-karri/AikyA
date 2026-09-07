@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Sparkles, Send, X } from "lucide-react";
 import { api } from "../api/client.js";
+import { useUniverse } from "../lib/useUniverse.js";
+import { buildResult, default as SharedResultCard } from "./resultCards.jsx";
 
 const STARTERS = [
   "📚 Find the library",
@@ -10,23 +13,9 @@ const STARTERS = [
   "🚌 Check buses",
 ];
 
-function ResultCard({ text, escalated }) {
-  return (
-    <>
-      <div className="ai-bubble assistant">{text}</div>
-      <div className="ai-card">
-        <h4>AIKYA says</h4>
-        <div className="ai-card-rows">
-          <span>📍 Location found on campus</span>
-          <span>🧭 Use "Where's the campus map?" to navigate</span>
-        </div>
-      </div>
-      {escalated && <div className="ai-card"><span style={{ fontSize: 12.5 }}>↪ Routed to the department for follow-up.</span></div>}
-    </>
-  );
-}
-
 export default function ChatWidget() {
+  const navigate = useNavigate();
+  const { data } = useUniverse();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     { role: "assistant", text: "Hey! Where are you headed? Ask me anything about this campus — buildings, food, faculty, buses…" },
@@ -42,12 +31,13 @@ export default function ChatWidget() {
   async function sendMessage(text) {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
+    const card = buildResult(trimmed, data);
     setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setInput("");
     setLoading(true);
     try {
       const { answer, escalated } = await api.sendChatMessage(trimmed);
-      setMessages((prev) => [...prev, { role: "answer", text: answer, escalated }]);
+      setMessages((prev) => [...prev, { role: "answer", text: answer, escalated, card }]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -57,6 +47,8 @@ export default function ChatWidget() {
       setLoading(false);
     }
   }
+
+  const goTo = (poi, info) => navigate(info ? (poi?.type === "shop" ? "/canteen" : "/map") : "/map");
 
   return (
     <>
@@ -87,7 +79,17 @@ export default function ChatWidget() {
                 m.role === "assistant" || m.role === "user" ? (
                   <div key={i} className={`ai-bubble ${m.role}`}>{m.text}</div>
                 ) : (
-                  <ResultCard key={i} text={m.text} escalated={m.escalated} />
+                  <div key={i}>
+                    <div className="ai-bubble assistant">{m.text}</div>
+                    {m.card && (
+                      <SharedResultCard
+                        kind={m.card.kind}
+                        item={m.card.item}
+                        onNavigate={(item, info) => goTo(item, info)}
+                      />
+                    )}
+                    {m.escalated && <div className="ai-card"><span style={{ fontSize: 12.5 }}>↪ Routed to the department for follow-up.</span></div>}
+                  </div>
                 )
               )}
               {loading && (
