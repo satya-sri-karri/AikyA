@@ -63,6 +63,7 @@ export const ENTITIES = [
       { name: "block", label: "Block", type: "text" },
       { name: "floor", label: "Floor", type: "text" },
       { name: "email", label: "Email", type: "text" },
+      { name: "password", label: "Login password (faculty self-service)", type: "text" },
       { name: "subjects", label: "Subjects (comma separated)", type: "list" },
       { name: "availableSlots", label: "Available slots (comma separated)", type: "list" },
       { name: "onLeave", label: "On leave", type: "checkbox" },

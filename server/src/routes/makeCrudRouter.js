@@ -1,5 +1,5 @@
 const express = require("express");
-const { requireAuth } = require("../middleware/auth");
+const { adminOnly } = require("../middleware/auth");
 
 /**
  * Creates a basic CRUD router for a given Mongoose model.
@@ -34,7 +34,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.post("/", requireAuth, async (req, res) => {
+  router.post("/", adminOnly, async (req, res) => {
     try {
       const item = await Model.create(req.body);
       res.status(201).json(item);
@@ -43,7 +43,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.put("/:id", requireAuth, async (req, res) => {
+  router.put("/:id", adminOnly, async (req, res) => {
     try {
       const item = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
@@ -56,7 +56,7 @@ function makeCrudRouter(Model) {
     }
   });
 
-  router.delete("/:id", requireAuth, async (req, res) => {
+  router.delete("/:id", adminOnly, async (req, res) => {
     try {
       const item = await Model.findByIdAndDelete(req.params.id);
       if (!item) return res.status(404).json({ error: "Not found" });

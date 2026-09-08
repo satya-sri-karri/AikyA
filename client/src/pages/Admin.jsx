@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import AdminCrud from "../components/AdminCrud.jsx";
+import FacultyPortal from "../components/FacultyPortal.jsx";
 import { ENTITIES } from "../admin/entityConfig.js";
 
 function Login({ onSuccess }) {
   const { login } = useAuth();
+  const [mode, setMode] = useState("admin"); // "admin" | "faculty"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,7 +17,7 @@ function Login({ onSuccess }) {
     setLoading(true);
     setError("");
     try {
-      await login(username, password);
+      await login(username.trim(), password);
       onSuccess();
     } catch (err) {
       setError(err.message);
@@ -26,10 +28,30 @@ function Login({ onSuccess }) {
   return (
     <div className="admin-login-wrap">
       <form className="admin-login" onSubmit={handleSubmit}>
-        <h2>Admin Login</h2>
+        <h2>Sign in</h2>
+        <p className="muted" style={{ margin: "0 0 4px" }}>Use the campus Admin account or your faculty email.</p>
+
+        <div className="faculty-role-switch">
+          <button
+            type="button"
+            className={mode === "admin" ? "active" : ""}
+            onClick={() => { setMode("admin"); setError(""); }}
+          >
+            🛡️ Admin
+          </button>
+          <button
+            type="button"
+            className={mode === "faculty" ? "active" : ""}
+            onClick={() => { setMode("faculty"); setError(""); }}
+          >
+            🎓 Faculty
+          </button>
+        </div>
+
         <label className="admin-field">
-          <span>Username</span>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus />
+          <span>{mode === "admin" ? "Admin username" : "Faculty email"}</span>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus
+            placeholder={mode === "admin" ? "admin" : "you@adityauniversity.in"} />
         </label>
         <label className="admin-field">
           <span>Password</span>
@@ -44,7 +66,7 @@ function Login({ onSuccess }) {
   );
 }
 
-function Dashboard() {
+function AdminDashboard() {
   const { user, logout } = useAuth();
   const [active, setActive] = useState(ENTITIES[0].key);
 
@@ -77,11 +99,19 @@ function Dashboard() {
   );
 }
 
+function FacultyDashboard() {
+  const { user, logout } = useAuth();
+  return (
+    <FacultyPortal facultyId={user?.id} onLogout={logout} />
+  );
+}
+
 export default function Admin() {
   const { user, loading } = useAuth();
   const [loggedIn, setLoggedIn] = useState(!!user);
 
   if (loading) return <div className="admin-page"><p className="muted">Loading...</p></div>;
   if (!user && !loggedIn) return <div className="admin-page"><Login onSuccess={() => setLoggedIn(true)} /></div>;
-  return <div className="admin-page"><Dashboard /></div>;
+  if (user?.role === "faculty") return <div className="admin-page"><FacultyDashboard /></div>;
+  return <div className="admin-page"><AdminDashboard /></div>;
 }

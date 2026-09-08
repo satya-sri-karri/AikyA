@@ -12,6 +12,7 @@ const Event = require("./models/Event");
 
 const chatRoutes = require("./routes/chat");
 const authRoutes = require("./routes/auth");
+const facultyRoutes = require("./routes/faculty");
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(express.json());
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 app.use("/api/departments", makeCrudRouter(Department));
-app.use("/api/faculty", makeCrudRouter(Faculty));
+app.use("/api/faculty", facultyRoutes); // role-aware: faculty can edit their own record
 app.use("/api/poi", makeCrudRouter(PointOfInterest));
 app.use("/api/buses", makeCrudRouter(BusRoute));
 app.use("/api/events", makeCrudRouter(Event));

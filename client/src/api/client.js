@@ -41,6 +41,11 @@ export const api = {
     request("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),
   me: () => request("/auth/me"),
 
+  // Faculty self-service (timetable + free time)
+  getFacultyTimetable: (id) => request(`/faculty/${id}/timetable`),
+  updateFacultyTimetable: (id, timetable, onLeave) =>
+    request(`/faculty/${id}/timetable`, { method: "PUT", body: JSON.stringify({ timetable, onLeave }) }),
+
   // Admin mutations (writes require admin token)
   create: (resource, data) =>
     request(`/${resource}`, { method: "POST", body: JSON.stringify(data) }),

@@ -29,4 +29,16 @@ function requireAuth(req, res, next) {
   }
 }
 
-module.exports = { signToken, requireAuth, jwtSecret };
+// Admin-only guard: only tokens issued to the campus admin may write to the
+// shared collections. Faculty tokens get full CRUD only on their own record
+// (handled by the faculty router) and are rejected here.
+function adminOnly(req, res, next) {
+  requireAuth(req, res, () => {
+    if (!req.admin || req.admin.role !== "admin") {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+    next();
+  });
+}
+
+module.exports = { signToken, requireAuth, adminOnly, jwtSecret };

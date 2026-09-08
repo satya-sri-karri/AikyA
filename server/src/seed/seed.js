@@ -1,5 +1,6 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const connectDB = require("../config/db");
 
 const Department = require("../models/Department");
@@ -373,6 +374,72 @@ async function seed() {
       availableSlots: ["10:00-11:00 AM"],
     },
   ]);
+
+  // Faculty self-service login: every seeded faculty logs in with their email
+  // and this shared demo password. Some also get a timetable so the free-time
+  // detection has real data to derive from.
+  const FAC_PASSWORD = "faculty123";
+
+  const sampleTimetables = {
+    "ayyappaswamy@adityauniversity.in": {
+      Monday: [
+        { start: "09:00", end: "10:00", subject: "DBMS", room: "R101" },
+        { start: "10:00", end: "11:00", subject: "Software Engineering", room: "R101" },
+      ],
+      Tuesday: [
+        { start: "09:00", end: "10:00", subject: "DBMS", room: "R201" },
+        { start: "11:00", end: "12:00", subject: "DBMS Lab", room: "DBMS Lab" },
+      ],
+      Wednesday: [{ start: "09:00", end: "10:00", subject: "Operating Systems", room: "R301" }],
+      Thursday: [{ start: "10:00", end: "11:00", subject: "Software Engineering", room: "R101" }],
+      Friday: [{ start: "09:00", end: "10:00", subject: "DBMS", room: "R101" }],
+    },
+    "gandikotaramu@adityauniversity.in": {
+      Monday: [
+        { start: "10:00", end: "11:00", subject: "Computer Networks", room: "R102" },
+        { start: "11:00", end: "12:00", subject: "Computer Networks Lab", room: "CN Lab" },
+      ],
+      Tuesday: [{ start: "09:00", end: "10:00", subject: "Operating Systems", room: "R102" }],
+      Wednesday: [{ start: "10:00", end: "11:00", subject: "Computer Networks", room: "R202" }],
+      Thursday: [{ start: "11:00", end: "12:00", subject: "Operating Systems Lab", room: "OS Lab" }],
+      Friday: [{ start: "10:00", end: "11:00", subject: "Computer Networks", room: "R102" }],
+    },
+    "gsridevi@adityauniversity.in": {
+      Monday: [
+        { start: "09:00", end: "10:00", subject: "VLSI Design", room: "V101" },
+        { start: "10:00", end: "11:00", subject: "VLSI Design", room: "V101" },
+      ],
+      Tuesday: [{ start: "11:00", end: "12:00", subject: "Digital Electronics", room: "V201" }],
+      Wednesday: [{ start: "09:00", end: "10:00", subject: "Digital Electronics", room: "V201" }],
+      Thursday: [{ start: "10:00", end: "11:00", subject: "VLSI Lab", room: "VLSI Lab" }],
+      Friday: [{ start: "02:00", end: "03:00", subject: "VLSI Design", room: "V101" }],
+    },
+    "sanjeevrao@adityauniversity.in": {
+      Monday: [{ start: "09:00", end: "10:00", subject: "Engineering Drawing", room: "CV110" }],
+      Tuesday: [{ start: "10:00", end: "11:00", subject: "Thermal Engineering", room: "CV210" }],
+      Wednesday: [{ start: "02:00", end: "03:00", subject: "CAD/CAM Lab", room: "CAD Lab" }],
+      Thursday: [{ start: "09:00", end: "10:00", subject: "Engineering Drawing", room: "CV110" }],
+    },
+    "satyanarayana@adityauniversity.in": {
+      Monday: [{ start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW101" }],
+      Tuesday: [
+        { start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW201" },
+        { start: "02:00", end: "03:00", subject: "ML Lab", room: "ML Lab" },
+      ],
+      Wednesday: [{ start: "10:00", end: "11:00", subject: "Deep Learning", room: "JW101" }],
+      Thursday: [{ start: "11:00", end: "12:00", subject: "AI Lab", room: "AI Lab" }],
+      Friday: [{ start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW101" }],
+    },
+  };
+
+  const facultyDocs = await Faculty.find({});
+  for (const f of facultyDocs) {
+    f.passwordHash = bcrypt.hashSync(FAC_PASSWORD, 10);
+    const tt = sampleTimetables[f.email];
+    if (tt) f.timetable = tt;
+    f.refreshAvailability();
+    await f.save();
+  }
 
   await PointOfInterest.insertMany([
     {

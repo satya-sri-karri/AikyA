@@ -1463,8 +1463,47 @@ a.chip { text-decoration: none; }
 .admin-row-actions { white-space: nowrap; display: flex; gap: 6px; }
 
 /* ============================================================
+   FACULTY PORTAL
+   ============================================================ */
+.faculty-role-switch { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); padding: 4px; }
+.faculty-role-switch button { flex: 1; border: none; background: transparent; color: var(--text-weak); padding: 7px 10px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.18s; }
+.faculty-role-switch button.active { background: var(--grad-ai); color: #fff; box-shadow: var(--shadow-accent); }
+.faculty-grid { display: grid; grid-template-columns: minmax(260px, 0.8fr) minmax(340px, 1.2fr); gap: 16px; }
+.faculty-card { background: var(--glass-strong); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px; align-self: start; }
+.faculty-card h3 { margin: 0; }
+.faculty-meta { display: flex; flex-direction: column; gap: 12px; }
+.faculty-meta p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.faculty-meta span { color: var(--text-weak); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.faculty-note { color: var(--text-weak); font-size: 13px; margin: 0; }
+.faculty-banner { border-radius: var(--radius-lg); padding: 14px 16px; font-size: 14px; display: flex; gap: 10px; align-items: flex-start; }
+.faculty-banner.ok { background: var(--success-soft); border: 1px solid var(--success); }
+.faculty-banner.off { background: var(--danger-soft); border: 1px solid var(--danger); }
+.faculty-chip { background: var(--surface-3); color: var(--text); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); padding: 3px 10px; font-size: 12px; font-weight: 600; }
+.faculty-chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.faculty-tt { display: flex; flex-direction: column; gap: 14px; }
+.faculty-tt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.faculty-tt-head h3 { margin: 0 0 4px; }
+.faculty-week { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.faculty-day-col { display: flex; flex-direction: column; gap: 8px; }
+.faculty-day { background: var(--glass-strong); border: 1px solid var(--glass-border); border-radius: var(--radius-md, 12px); padding: 10px; box-shadow: var(--shadow-sm); }
+.faculty-day.sat { border-color: var(--border-strong); }
+.faculty-day-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.faculty-slot-list { display: flex; flex-direction: column; gap: 6px; }
+.faculty-slot { display: flex; flex-direction: column; gap: 4px; padding: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; }
+.faculty-slot-times { display: flex; align-items: center; gap: 4px; }
+.faculty-slot-times input { flex: 1; min-width: 0; background: var(--surface-3); border: 1px solid var(--border-strong); border-radius: 8px; padding: 4px 6px; color: var(--text); font-size: 12px; }
+.faculty-slot-times span { color: var(--text-weak); font-size: 12px; }
+.faculty-subject, .faculty-room { background: var(--surface-3); border: 1px solid var(--border-strong); border-radius: 8px; padding: 5px 8px; color: var(--text); font-size: 12px; }
+.faculty-empty { color: var(--text-faint, var(--text-weak)); font-size: 12px; padding: 6px 0; }
+.faculty-free { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; color: var(--text-weak); }
+.faculty-free > span:first-child { text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; font-weight: 700; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
+@media (max-width: 700px) {
+  .faculty-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 1280px) {
   .dash-layout { grid-template-columns: minmax(0, 1fr) 300px; }
   .dash-col-left { grid-row: 1 / 2; }

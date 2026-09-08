@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
     }
     api
       .me()
-      .then((data) => setUser({ username: data.username }))
+      .then((data) => setUser({ username: data.username, role: data.role, id: data.sub }))
       .catch(() => setToken(null))
       .finally(() => setLoading(false));
   }, []);
@@ -22,7 +22,13 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (username, password) => {
     const data = await api.login(username, password);
     setToken(data.token);
-    setUser({ username: data.username });
+    setUser({
+      username: data.username,
+      role: data.role,
+      id: data.role === "faculty" ? data.facultyId || data.sub : data.sub,
+      name: data.name,
+      departmentName: data.departmentName,
+    });
     return data;
   }, []);
 
