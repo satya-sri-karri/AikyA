@@ -12,9 +12,9 @@ const QUICK_ACTIONS = [
   { label: "Navigate", sub: "Live maps & routes", icon: Navigation, to: "/map", iconBg: null },
   { label: "Find Faculty", sub: "Availability live", icon: Users, to: "/faculty", iconBg: "#34C48C" },
   { label: "Find Food", sub: "Outlets & menus", icon: UtensilsCrossed, to: "/canteen", iconBg: "#F27BB8" },
-  { label: "Library", sub: "Study spaces", icon: BookOpen, to: "/map", iconBg: "#5FB9F2" },
+  { label: "Study Spaces", sub: "Library & blocks", icon: BookOpen, to: "/map", iconBg: "#16A8E8" },
   { label: "Buses", sub: "Routes & stops", icon: Bus, to: "/buses", iconBg: "#E5A00D" },
-  { label: "Events", sub: "Today & upcoming", icon: CalendarDays, to: "/events", iconBg: "#8A7BFF" },
+  { label: "Events", sub: "Today & upcoming", icon: CalendarDays, to: "/events", iconBg: "#07579C" },
 ];
 
 const CAT_ICON = {
@@ -30,11 +30,14 @@ export default function Dashboard() {
   const faculty = data.faculty || [];
   const events = data.events || [];
 
+  const today = new Date().toISOString().slice(0, 10);
+  const todaysEvents = events.filter((e) => (e.date || "").startsWith(today)).length;
+
   const snapshot = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
     return [
       { icon: "🚌", num: buses.filter((b) => (b.status || "").toLowerCase().includes("route")).length, label: "Buses on route", sub: `${buses.length} total`, tint: "#E5A00D" },
-      { icon: "📅", num: events.filter((e) => (e.date || "").startsWith(today)).length, label: "Events today", sub: `${events.length} upcoming`, tint: "#8A7BFF" },
+      { icon: "📅", num: events.filter((e) => (e.date || "").startsWith(today)).length, label: "Events today", sub: `${events.length} upcoming`, tint: "#07579C" },
       { icon: "🍔", num: `${pois.filter((p) => p.type === "shop" && p.isOpenNow).length}/${pois.filter((p) => p.type === "shop").length}`, label: "Food outlets open", sub: "Open right now", tint: "#F27BB8" },
       { icon: "👨‍🏫", num: faculty.filter((f) => !f.onLeave).length, label: "Faculty available", sub: "On campus now", tint: "#34C48C" },
     ];
@@ -42,8 +45,27 @@ export default function Dashboard() {
 
   const favList = favorites.length > 0 ? favorites : recents;
 
+  const openShops = pois.filter((p) => p.type === "shop" && p.isOpenNow).length;
+  const shops = pois.filter((p) => p.type === "shop").length;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+      <div className="dash-welcome">
+        <div style={{ minWidth: 0 }}>
+          <div className="dash-welcome-kicker">AIKYA Command Center</div>
+          <h1>What's happening today?</h1>
+        </div>
+        <div className="dash-welcome-right">
+          <span className="chip-row" style={{ gap: 8 }}>
+            <span className="live-pill" style={{ padding: "6px 12px" }}><span className="pulse-dot" /> Campus live</span>
+            {todaysEvents > 0 && (
+              <span className="badge badge-accent">{todaysEvents} event{todaysEvents > 1 ? "s" : ""} today</span>
+            )}
+            <span className="badge badge-open">{openShops}/{shops} food outlets open</span>
+          </span>
+        </div>
+      </div>
+
       <div className="dash-layout">
         {/* Left — quick actions */}
         <div className="dash-col dash-col-left">
@@ -78,9 +100,6 @@ export default function Dashboard() {
                   <span className="live-pill" style={{ padding: "4px 10px" }}><span className="pulse-dot" /></span>
                   Campus, live
                 </h3>
-                <Link to="/map" className="btn btn-soft" style={{ padding: "8px 14px", fontSize: 12.5 }}>
-                  Open Explore →
-                </Link>
               </div>
               <CampusMap mode="dashboard" onNavigate={() => navigate("/map")} />
             </div>

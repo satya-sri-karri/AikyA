@@ -28,7 +28,7 @@ async function seed() {
       code: "CSE",
       block: "Ramanujan Bhavan",
       floor: "1st Floor",
-      hod: "Dr. K. Ayyappa Swamy",
+      hod: "Dr. Tirukoti Sudha Rani",
       labs: [
         "Database Management Systems Lab",
         "Computer Networks Lab",
@@ -43,7 +43,7 @@ async function seed() {
       code: "IT",
       block: "Newton Bhavan",
       floor: "2nd Floor",
-      hod: "Dr. P. Surya Lakshmi",
+      hod: "Dr. Makineedi Raja Babu",
       labs: ["Web Technologies Lab", "Cloud Computing Lab", "Data Structures Lab"],
       contactEmail: "it@adityauniversity.in",
       officeHours: "9:00 AM - 6:00 PM",
@@ -53,7 +53,7 @@ async function seed() {
       code: "AIML",
       block: "James Watt Bhavan",
       floor: "Ground Floor",
-      hod: "Dr. S. Satyanarayana",
+      hod: "Dr. Kovvuri N Bhargavi",
       labs: ["AI Lab", "Machine Learning Lab", "Deep Learning Lab"],
       contactEmail: "aiml@adityauniversity.in",
       officeHours: "9:00 AM - 6:00 PM",
@@ -73,7 +73,7 @@ async function seed() {
       code: "ECE",
       block: "Visvesvaraya Bhavan",
       floor: "Ground Floor",
-      hod: "Dr. G. Sridevi",
+      hod: "Dr. A Vanathi",
       labs: ["VLSI Design Lab", "Embedded Systems Lab", "Signals & Systems Lab", "RF & Microwave Lab"],
       contactEmail: "ece@adityauniversity.in",
       officeHours: "9:00 AM - 6:00 PM",
@@ -133,7 +133,7 @@ async function seed() {
       code: "AG",
       block: "Cotton Bhavan",
       floor: "1st Floor",
-      hod: "Dr. N. Samba Siva Rao",
+      hod: "Dr. Bellum Ramamohan Reddy",
       labs: ["Soil Science Lab", "Farm Machinery Lab", "Irrigation Engineering Lab"],
       contactEmail: "agri@adityauniversity.in",
       officeHours: "9:00 AM - 6:00 PM",
@@ -190,190 +190,624 @@ async function seed() {
     },
   ]);
 
-  await Faculty.insertMany([
+  const ENRICHED_FACULTY = [
+    // ── CSE (Ramanujan Bhavan) ──────────────────────────────────────────────
     {
-      name: "Dr. G. Sridevi",
-      departmentId: departments[4]._id,
-      departmentName: "ECE",
-      designation: "Professor & Dean, School of Engineering",
-      cabin: "V102",
-      block: "Visvesvaraya Bhavan",
-      floor: "Ground Floor",
-      email: "gsridevi@adityauniversity.in",
-      subjects: ["VLSI Design", "Digital Electronics"],
+      name: "Dr. Sripada Rama Sree",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Pro Vice-Chancellor (Academics)",
+      cabin: "R101",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "sripadaramasree@adityauniversity.in",
+      subjects: ["Computer Architecture", "Advanced Algorithms"],
+      onLeave: false,
+      availableSlots: ["2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Vinjamuri Venkata Kamesh",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Professor",
+      cabin: "R201",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "vkvkamesh@adityauniversity.in",
+      subjects: ["Data Structures", "Operating Systems"],
       onLeave: false,
       availableSlots: ["10:00-11:00 AM", "3:00-4:00 PM"],
     },
     {
-      name: "Dr. M. Venkateswara Rajesh",
-      departmentId: departments[12]._id,
-      departmentName: "MCA",
-      designation: "Professor & Associate Dean, School of Computing",
-      cabin: "DGC101",
-      block: "Aditya Degree & PG College",
-      floor: "Ground Floor",
-      email: "mvrajesh@adityauniversity.in",
-      subjects: ["Data Structures", "Algorithms"],
+      name: "Dr. Regella Venkata Satya Lalitha",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Professor",
+      cabin: "R203",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "rvsalalitha@adityauniversity.in",
+      subjects: ["Database Management Systems", "Data Mining"],
       onLeave: false,
       availableSlots: ["11:00 AM-12:00 PM"],
     },
     {
-      name: "Dr. Sowjanya Bagadi",
-      departmentId: departments[13]._id,
-      departmentName: "MBA",
-      designation: "Associate Professor & Associate Dean, School of Business",
-      cabin: "DGC210",
-      block: "Aditya Degree & PG College",
+      name: "Dr. Tirukoti Sudha Rani",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor & HOD, CSE",
+      cabin: "R205",
+      block: "Ramanujan Bhavan",
       floor: "1st Floor",
-      email: "sowjanya.bagadi@adityauniversity.in",
-      subjects: ["Marketing Management", "Financial Accounting"],
+      email: "tirukotisudharani@adityauniversity.in",
+      subjects: ["Compiler Design", "Formal Languages"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM", "4:00-5:00 PM"],
+    },
+    {
+      name: "Dr. Tatapudi Prabhakara Rao",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Associate Professor",
+      cabin: "R207",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "tpabhakararao@adityauniversity.in",
+      subjects: ["Software Engineering", "Web Technologies"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM", "2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Subba Rao Polamuri",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Associate Professor",
+      cabin: "R209",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "subbarao@adityauniversity.in",
+      subjects: ["Computer Networks", "Network Security"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Dr. Phani Sridhar Addepalli",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor & HOD",
+      cabin: "R211",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "phanisridhar@adityauniversity.in",
+      subjects: ["Machine Learning", "Artificial Intelligence"],
+      onLeave: false,
+      availableSlots: ["9:00-10:00 AM", "3:00-4:00 PM"],
+    },
+    {
+      name: "Dr. Chandra Sekhar Kolli",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Associate Professor",
+      cabin: "R213",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "chandrasekharkolli@adityauniversity.in",
+      subjects: ["Cloud Computing", "Virtualization"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Dr. M V B Murali Krishna M",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R215",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "muralikrishna@adityauniversity.in",
+      subjects: ["Computer Organization", "Embedded Systems"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM", "2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Pennada Siva Satya Prasad",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R217",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "pennadasivasatya@adityauniversity.in",
+      subjects: ["Blockchain Technology", "Cryptography"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Mr. Gandhikota Umamahesh",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R219",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "gandikotaumamahesh@adityauniversity.in",
+      subjects: ["Operating Systems", "Linux Administration"],
+      onLeave: false,
+      availableSlots: ["9:00-10:00 AM", "3:00-4:00 PM"],
+    },
+    {
+      name: "Mr. Ramesh Kothapalli",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R221",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "rameshkothapalli@adityauniversity.in",
+      subjects: ["Data Structures", "Algorithm Design"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Ms. Kasichainula Vydehi",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R223",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "kasichainulavydehi@adityauniversity.in",
+      subjects: ["Database Management Systems", "Python Programming"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Ms. Rananki Padma Sri",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R225",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "ranankipadmasri@adityauniversity.in",
+      subjects: ["Computer Networks", "Network Programming"],
       onLeave: false,
       availableSlots: ["2:00-3:00 PM"],
     },
     {
-      name: "Mr. V. Anil Chavan",
+      name: "Dr. N Visalakshi",
+      departmentId: departments[0]._id,
+      departmentName: "CSE",
+      designation: "Assistant Professor",
+      cabin: "R227",
+      block: "Ramanujan Bhavan",
+      floor: "1st Floor",
+      email: "visalakshi@adityauniversity.in",
+      subjects: ["Machine Learning", "Data Analytics"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    // ── IT (Newton Bhavan) ────────────────────────────────────────────────────
+    {
+      name: "Dr. Makineedi Raja Babu",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Associate Professor & HOD, IT",
+      cabin: "NW301",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "makineedirajababu@adityauniversity.in",
+      subjects: ["Cloud Computing", "Software Architecture"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM", "3:00-4:00 PM"],
+    },
+    {
+      name: "Dr. Itha Veeranjaneyulu",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Associate Professor",
+      cabin: "NW303",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "ivaranjaneyulu@adityauniversity.in",
+      subjects: ["Data Science", "Big Data Analytics"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Dr. Annemneedi Lakshmana Rao",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Associate Professor",
+      cabin: "NW305",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "annemneedilakshmanarao@adityauniversity.in",
+      subjects: ["Web Technologies", "Internet of Things"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Mr. Antharaju K Chakravarthy",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Assistant Professor",
+      cabin: "NW307",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "antharajuchakravarthy@adityauniversity.in",
+      subjects: ["Cyber Security", "Network Administration"],
+      onLeave: false,
+      availableSlots: ["2:00-3:00 PM"],
+    },
+    {
+      name: "Ms. Pediredla Srilatha",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Assistant Professor",
+      cabin: "NW309",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "pediredlasrilatha@adityauniversity.in",
+      subjects: ["Cloud Computing", "DevOps"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Mr. Soloman Raju Cherukuri",
+      departmentId: departments[1]._id,
+      departmentName: "IT",
+      designation: "Assistant Professor",
+      cabin: "NW311",
+      block: "Newton Bhavan",
+      floor: "2nd Floor",
+      email: "solomanrajucherukuri@adityauniversity.in",
+      subjects: ["Data Structures", "Java Programming"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    // ── AIML (James Watt Bhavan) ─────────────────────────────────────────────
+    {
+      name: "Dr. Kovvuri N Bhargavi",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Associate Professor & HOD, AIML",
+      cabin: "JW301",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "kovvuribhargavi@adityauniversity.in",
+      subjects: ["Deep Learning", "Natural Language Processing"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM", "4:00-5:00 PM"],
+    },
+    {
+      name: "Dr. Mangalapalli Vamsikrishna",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Professor",
+      cabin: "JW303",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "mangalapallivamsikrishna@adityauniversity.in",
+      subjects: ["Artificial Intelligence", "Expert Systems"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Dr. Maganti Venkatesh",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Associate Professor",
+      cabin: "JW305",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "magantivenkatesh@adityauniversity.in",
+      subjects: ["Machine Learning", "Reinforcement Learning"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM", "2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Bollu Manikyala Rao",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Associate Professor",
+      cabin: "JW307",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "bollumanikyalarao@adityauniversity.in",
+      subjects: ["Computer Vision", "Image Processing"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Dr. Kaladi Govindaraju",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Assistant Professor",
+      cabin: "JW309",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "kaladigovindaraju@adityauniversity.in",
+      subjects: ["Data Mining", "Statistical Learning"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Dr. Suneetha Racharla",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Assistant Professor",
+      cabin: "JW311",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "suneetharacharla@adityauniversity.in",
+      subjects: ["Deep Learning", "Generative AI"],
+      onLeave: false,
+      availableSlots: ["2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Raviteja Vinjamuri",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Assistant Professor",
+      cabin: "JW313",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "ravitejavinjamuri@adityauniversity.in",
+      subjects: ["Machine Learning", "Pattern Recognition"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM", "3:00-4:00 PM"],
+    },
+    {
+      name: "Ms. Nalla Akhila",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Assistant Professor",
+      cabin: "JW315",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "nallaakhila@adityauniversity.in",
+      subjects: ["Natural Language Processing", "Computer Vision"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Ms. Alamanda Sophia",
+      departmentId: departments[2]._id,
+      departmentName: "AIML",
+      designation: "Assistant Professor",
+      cabin: "JW317",
+      block: "James Watt Bhavan",
+      floor: "1st Floor",
+      email: "alamandasophia@adityauniversity.in",
+      subjects: ["Data Science", "R Programming"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    // ── ECE (Visvesvaraya Bhavan) ────────────────────────────────────────────
+    {
+      name: "Dr. A Vanathi",
+      departmentId: departments[4]._id,
+      departmentName: "ECE",
+      designation: "Associate Professor & Associate Dean, Freshman Engineering",
+      cabin: "V102",
+      block: "Visvesvaraya Bhavan",
+      floor: "Ground Floor",
+      email: "avanathi@adityauniversity.in",
+      subjects: ["Basic Electronics", "Digital Signal Processing"],
+      onLeave: false,
+      availableSlots: ["2:00-3:00 PM"],
+    },
+    // ── CE (Civil Engineering) ──────────────────────────────────────────────
+    {
+      name: "Dr. Bellum Ramamohan Reddy",
+      departmentId: departments[10]._id,
+      departmentName: "AG",
+      designation: "Assistant Professor & HOD, Agricultural Engineering",
+      cabin: "CT201",
+      block: "Cotton Bhavan",
+      floor: "1st Floor",
+      email: "bellumramamohanreddy@adityauniversity.in",
+      subjects: ["Farm Machinery", "Soil Science"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Dr. S Govindarajan",
+      departmentId: departments[10]._id,
+      departmentName: "AG",
+      designation: "Associate Professor",
+      cabin: "CT203",
+      block: "Cotton Bhavan",
+      floor: "1st Floor",
+      email: "sgovindarajan@adityauniversity.in",
+      subjects: ["Irrigation Engineering", "Water Resources"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    {
+      name: "Dr. Pasupuleti Laxmi Narayana",
+      departmentId: departments[7]._id,
+      departmentName: "CE",
+      designation: "Assistant Professor",
+      cabin: "KLR101",
+      block: "K.L. Rao Bhavan",
+      floor: "Proposed",
+      email: "pasupuletiraxminarayana@adityauniversity.in",
+      subjects: ["Structural Analysis", "Concrete Technology"],
+      onLeave: false,
+      availableSlots: ["10:00-11:00 AM"],
+    },
+    {
+      name: "Dr. Talapareddy Suman Kumar",
+      departmentId: departments[7]._id,
+      departmentName: "CE",
+      designation: "Assistant Professor",
+      cabin: "KLR103",
+      block: "K.L. Rao Bhavan",
+      floor: "Proposed",
+      email: "talapareddysumankumar@adityauniversity.in",
+      subjects: ["Surveying", "Transportation Engineering"],
+      onLeave: false,
+      availableSlots: ["2:00-3:00 PM"],
+    },
+    {
+      name: "Dr. Ch Naga Dheeraj Kumar Reddy",
+      departmentId: departments[7]._id,
+      departmentName: "CE",
+      designation: "Assistant Professor",
+      cabin: "KLR105",
+      block: "K.L. Rao Bhavan",
+      floor: "Proposed",
+      email: "chnagadheeraj@adityauniversity.in",
+      subjects: ["Geotechnical Engineering", "Foundation Design"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    // ── MCA (Aditya Degree & PG College) ────────────────────────────────────
+    {
+      name: "Dr. M. Venkata Rajesh",
+      departmentId: departments[12]._id,
+      departmentName: "MCA",
+      designation: "Associate Professor & Associate Dean, School of Computing",
+      cabin: "DGC101",
+      block: "Aditya Degree & PG College",
+      floor: "Ground Floor",
+      email: "mvankatarajesh@adityauniversity.in",
+      subjects: ["Data Structures", "Algorithms"],
+      onLeave: false,
+      availableSlots: ["11:00 AM-12:00 PM"],
+    },
+    // ── SCI (School of Sciences) ─────────────────────────────────────────────
+    {
+      name: "Mr. Vilas Anil Chavan",
       departmentId: departments[14]._id,
       departmentName: "SCI",
-      designation: "Assistant Professor & Associate Dean, School of Sciences",
+      designation: "Associate Professor & Associate Dean, School of Sciences",
       cabin: "DGC302",
       block: "Aditya Degree & PG College",
       floor: "2nd Floor",
-      email: "anilchavan@adityauniversity.in",
+      email: "vilasanilchavan@adityauniversity.in",
       subjects: ["Cyber Security", "Forensic Science"],
       onLeave: false,
       availableSlots: ["10:00-11:00 AM"],
     },
-    {
-      name: "Dr. D. Sathis Kumar",
-      departmentId: departments[15]._id,
-      departmentName: "PHA",
-      designation: "Professor & Dean, School of Pharmacy",
-      cabin: "APC130",
-      block: "Aditya Pharmacy College",
-      floor: "Ground Floor",
-      email: "sathiskumar@adityauniversity.in",
-      subjects: ["Pharmaceutical Chemistry"],
-      onLeave: false,
-      availableSlots: ["4:00-5:00 PM"],
-    },
-    {
-      name: "Dr. K. Ayyappa Swamy",
-      departmentId: departments[0]._id,
-      departmentName: "CSE",
-      designation: "Professor & Associate Dean - Academics",
-      cabin: "R203",
-      block: "Ramanujan Bhavan",
-      floor: "1st Floor",
-      email: "ayyappaswamy@adityauniversity.in",
-      subjects: ["DBMS", "Software Engineering"],
-      onLeave: false,
-      availableSlots: ["9:00-10:00 AM", "2:00-3:00 PM"],
-    },
-    {
-      name: "Dr. S. Satyanarayana",
-      departmentId: departments[2]._id,
-      departmentName: "AIML",
-      designation: "Professor & HOD, AIML",
-      cabin: "JW031",
-      block: "James Watt Bhavan",
-      floor: "Ground Floor",
-      email: "satyanarayana@adityauniversity.in",
-      subjects: ["Machine Learning", "Deep Learning"],
-      onLeave: false,
-      availableSlots: ["11:00 AM-12:00 PM", "4:00-5:00 PM"],
-    },
-    {
-      name: "Dr. B. Ravi Kumar",
-      departmentId: departments[8]._id,
-      departmentName: "MIN",
-      designation: "Professor & HOD, Mining",
-      cabin: "CT014",
-      block: "Cotton Bhavan",
-      floor: "Ground Floor",
-      email: "ravikumar.mining@adityauniversity.in",
-      subjects: ["Mine Ventilation", "Surface Mining"],
-      onLeave: false,
-      availableSlots: ["10:00-11:00 AM"],
-    },
-    {
-      name: "Dr. P. Surya Lakshmi",
-      departmentId: departments[1]._id,
-      departmentName: "IT",
-      designation: "Associate Professor & HOD, IT",
-      cabin: "NW311",
-      block: "Newton Bhavan",
-      floor: "2nd Floor",
-      email: "psuryalakshmi@adityauniversity.in",
-      subjects: ["Cloud Computing", "Web Technologies"],
-      onLeave: true,
-      availableSlots: [],
-    },
-    {
-      name: "Dr. G. Sanjeev Rao",
-      departmentId: departments[6]._id,
-      departmentName: "ME",
-      designation: "Professor & Dean, Career Development",
-      cabin: "CV102",
-      block: "C.V. Raman Bhavan",
-      floor: "Ground Floor",
-      email: "sanjeevrao@adityauniversity.in",
-      subjects: ["Thermal Engineering", "Engineering Drawing"],
-      onLeave: false,
-      availableSlots: ["3:00-4:00 PM"],
-    },
-    {
-      name: "Dr. Gandikota Ramu",
-      departmentId: departments[0]._id,
-      departmentName: "CSE",
-      designation: "Professor & Dean, Technical Training",
-      cabin: "R207",
-      block: "Ramanujan Bhavan",
-      floor: "1st Floor",
-      email: "gandikotaramu@adityauniversity.in",
-      subjects: ["Operating Systems", "Computer Networks"],
-      onLeave: false,
-      availableSlots: ["12:00-1:00 PM"],
-    },
-    {
-      name: "Dr. D. Kishore",
-      departmentId: departments[5]._id,
-      departmentName: "EEE",
-      designation: "Professor & Dean, Student Activities",
-      cabin: "CV205",
-      block: "C.V. Raman Bhavan",
-      floor: "1st Floor",
-      email: "kishore.eee@adityauniversity.in",
-      subjects: ["Electrical Machines", "Power Systems"],
-      onLeave: false,
-      availableSlots: ["9:00-10:00 AM"],
-    },
-    {
-      name: "Dr. A. Vanathi",
-      departmentId: departments[4]._id,
-      departmentName: "ECE",
-      designation: "Associate Professor & Associate Dean, Freshman Engineering",
-      cabin: "V115",
-      block: "Visvesvaraya Bhavan",
-      floor: "Ground Floor",
-      email: "vanathi@adityauniversity.in",
-      subjects: ["Engineering Physics", "Basic Electronics"],
-      onLeave: false,
-      availableSlots: ["2:00-3:00 PM"],
-    },
-    {
-      name: "Dr. S. H. V. S. Prasad",
-      departmentId: departments[5]._id,
-      departmentName: "EEE",
-      designation: "Associate Professor & HOD, EEE",
-      cabin: "CV210",
-      block: "C.V. Raman Bhavan",
-      floor: "1st Floor",
-      email: "prasad.eee@adityauniversity.in",
-      subjects: ["Control Systems", "Power Electronics"],
-      onLeave: false,
-      availableSlots: ["10:00-11:00 AM"],
-    },
+  ];
+
+  // ── Master faculty table (Aditya Surampalem) ──────────────────────────────
+  // The full 243-record roster from the college's master table. Enriched records
+  // above (with cabins, blocks, floors, subjects) are overlaid on top by name.
+  const FACULTY_MASTER = require("./facultyMasterData");
+
+  // Master-table departments map onto the seeded departments where a clean match
+  // exists. Groupings ("School of Engineering", etc.) and admin units stay as-is.
+  const MASTER_DEPT_INDEX = {
+    "Civil Engineering": 7, // CE
+    "Mechanical Engineering": 6, // ME
+    "Computer Science & Engineering": 0, // CSE
+    "Artificial Intelligence & Machine Learning": 2, // AIML
+    "Agricultural Engineering": 10, // AG
+  };
+  const MASTER_ADMIN = new Set([
+    "University Administration",
+    "Examinations",
+    "Research & Consultancy",
+    "International Relations",
+    "Student Welfare",
+    "IQAC",
+    "Academics",
+    "Student Affairs",
+    "Campus Life Management",
+    "Admissions",
+    "Career Development",
+    "Aditya University",
   ]);
+
+  const enrichedByName = new Map(
+    ENRICHED_FACULTY.map((f) => [f.name.trim().toLowerCase(), f])
+  );
+
+  // Alias the pre-existing "Dr. M. Venkata Rajesh" to its master ID row (F171).
+  const NAME_ALIASES = {
+    "dr. m. venkata rajesh": "Dr. Masina Venkata Rajesh",
+  };
+
+  const usedEmails = new Set(
+    ENRICHED_FACULTY.map((f) => f.email).filter(Boolean).map((e) => e.toLowerCase())
+  );
+
+  const slugFor = (name) =>
+    name
+      .replace(/\b(Dr|Mr|Ms|Mrs|Smt|Sri|Prof|Dr\.?\.?)\b\.?/gi, "")
+      .replace(/[^A-Za-z ]+/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "");
+
+  const buildEmail = (name) => {
+    let slug = slugFor(name) || "faculty";
+    let email = `${slug}@adityauniversity.in`;
+    let n = 2;
+    while (usedEmails.has(email.toLowerCase())) {
+      email = `${slug}${n}@adityauniversity.in`;
+      n += 1;
+    }
+    usedEmails.add(email.toLowerCase());
+    return email;
+  };
+
+  const facultyRows = FACULTY_MASTER.map((m) => {
+    const key = m.name.trim().toLowerCase();
+    const aliasKey = Object.keys(NAME_ALIASES).find((k) => {
+      const target = NAME_ALIASES[k].trim().toLowerCase();
+      return key === k || key === target;
+    });
+    const enriched = enrichedByName.get(aliasKey || key);
+
+    let departmentId;
+    let departmentName;
+    if (MASTER_ADMIN.has(m.department)) {
+      departmentId = null;
+      departmentName = "University Administration";
+    } else if (MASTER_DEPT_INDEX[m.department] !== undefined) {
+      departmentId = departments[MASTER_DEPT_INDEX[m.department]]._id;
+      departmentName = departments[MASTER_DEPT_INDEX[m.department]].code; // e.g. "CSE"
+    } else {
+      departmentId = null;
+      departmentName = m.department; // grouping like "School of Engineering"
+    }
+
+    const row = {
+      name: m.name,
+      departmentId,
+      departmentName,
+      designation: m.role,
+      onLeave: false,
+      availableSlots: [],
+    };
+
+    if (enriched) {
+      // Keep the richer details (cabin, block, floor, email, subjects, timetable
+      // hooks) while preserving the master table's department/designation.
+      Object.assign(row, enriched);
+      if (enriched.email) usedEmails.add(enriched.email.toLowerCase());
+    } else {
+      row.email = buildEmail(m.name);
+    }
+    return row;
+  });
+
+  // Any enriched record that is not represented in the master table stays as-is.
+  const masterKeys = new Set(
+    FACULTY_MASTER.map((m) => m.name.trim().toLowerCase())
+  );
+  for (const name in NAME_ALIASES) masterKeys.add(name);
+  for (const f of ENRICHED_FACULTY) {
+    const k = f.name.trim().toLowerCase();
+    if (!masterKeys.has(k)) facultyRows.push(f);
+  }
+
+  await Faculty.insertMany(facultyRows);
 
   // Faculty self-service login: every seeded faculty logs in with their email
   // and this shared demo password. Some also get a timetable so the free-time
@@ -381,54 +815,51 @@ async function seed() {
   const FAC_PASSWORD = "faculty123";
 
   const sampleTimetables = {
-    "ayyappaswamy@adityauniversity.in": {
+    "tirukotisudharani@adityauniversity.in": {
       Monday: [
-        { start: "09:00", end: "10:00", subject: "DBMS", room: "R101" },
-        { start: "10:00", end: "11:00", subject: "Software Engineering", room: "R101" },
+        { start: "09:00", end: "10:00", subject: "Compiler Design", room: "R201" },
+        { start: "10:00", end: "11:00", subject: "Formal Languages", room: "R203" },
       ],
       Tuesday: [
-        { start: "09:00", end: "10:00", subject: "DBMS", room: "R201" },
-        { start: "11:00", end: "12:00", subject: "DBMS Lab", room: "DBMS Lab" },
+        { start: "09:00", end: "10:00", subject: "Compiler Design", room: "R205" },
+        { start: "11:00", end: "12:00", subject: "Compiler Design Lab", room: "CSE Lab" },
       ],
-      Wednesday: [{ start: "09:00", end: "10:00", subject: "Operating Systems", room: "R301" }],
-      Thursday: [{ start: "10:00", end: "11:00", subject: "Software Engineering", room: "R101" }],
-      Friday: [{ start: "09:00", end: "10:00", subject: "DBMS", room: "R101" }],
+      Wednesday: [{ start: "09:00", end: "10:00", subject: "Formal Languages", room: "R201" }],
+      Thursday: [{ start: "10:00", end: "11:00", subject: "Compiler Design", room: "R205" }],
+      Friday: [{ start: "09:00", end: "10:00", subject: "Formal Languages", room: "R203" }],
     },
-    "gandikotaramu@adityauniversity.in": {
+    "makineedirajababu@adityauniversity.in": {
       Monday: [
-        { start: "10:00", end: "11:00", subject: "Computer Networks", room: "R102" },
-        { start: "11:00", end: "12:00", subject: "Computer Networks Lab", room: "CN Lab" },
+        { start: "10:00", end: "11:00", subject: "Cloud Computing", room: "NW201" },
+        { start: "11:00", end: "12:00", subject: "Cloud Lab", room: "Cloud Lab" },
       ],
-      Tuesday: [{ start: "09:00", end: "10:00", subject: "Operating Systems", room: "R102" }],
-      Wednesday: [{ start: "10:00", end: "11:00", subject: "Computer Networks", room: "R202" }],
-      Thursday: [{ start: "11:00", end: "12:00", subject: "Operating Systems Lab", room: "OS Lab" }],
-      Friday: [{ start: "10:00", end: "11:00", subject: "Computer Networks", room: "R102" }],
+      Tuesday: [{ start: "09:00", end: "10:00", subject: "Software Architecture", room: "NW203" }],
+      Wednesday: [{ start: "10:00", end: "11:00", subject: "Cloud Computing", room: "NW201" }],
+      Thursday: [{ start: "11:00", end: "12:00", subject: "Software Architecture", room: "NW203" }],
+      Friday: [{ start: "10:00", end: "11:00", subject: "Cloud Computing", room: "NW201" }],
     },
-    "gsridevi@adityauniversity.in": {
+    "kovvuribhargavi@adityauniversity.in": {
       Monday: [
-        { start: "09:00", end: "10:00", subject: "VLSI Design", room: "V101" },
-        { start: "10:00", end: "11:00", subject: "VLSI Design", room: "V101" },
+        { start: "09:00", end: "10:00", subject: "Deep Learning", room: "JW101" },
+        { start: "10:00", end: "11:00", subject: "NLP", room: "JW103" },
       ],
-      Tuesday: [{ start: "11:00", end: "12:00", subject: "Digital Electronics", room: "V201" }],
-      Wednesday: [{ start: "09:00", end: "10:00", subject: "Digital Electronics", room: "V201" }],
-      Thursday: [{ start: "10:00", end: "11:00", subject: "VLSI Lab", room: "VLSI Lab" }],
-      Friday: [{ start: "02:00", end: "03:00", subject: "VLSI Design", room: "V101" }],
-    },
-    "sanjeevrao@adityauniversity.in": {
-      Monday: [{ start: "09:00", end: "10:00", subject: "Engineering Drawing", room: "CV110" }],
-      Tuesday: [{ start: "10:00", end: "11:00", subject: "Thermal Engineering", room: "CV210" }],
-      Wednesday: [{ start: "02:00", end: "03:00", subject: "CAD/CAM Lab", room: "CAD Lab" }],
-      Thursday: [{ start: "09:00", end: "10:00", subject: "Engineering Drawing", room: "CV110" }],
-    },
-    "satyanarayana@adityauniversity.in": {
-      Monday: [{ start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW101" }],
       Tuesday: [
-        { start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW201" },
-        { start: "02:00", end: "03:00", subject: "ML Lab", room: "ML Lab" },
+        { start: "09:00", end: "10:00", subject: "Deep Learning", room: "JW201" },
+        { start: "14:00", end: "15:00", subject: "DL Lab", room: "AIML Lab" },
       ],
-      Wednesday: [{ start: "10:00", end: "11:00", subject: "Deep Learning", room: "JW101" }],
-      Thursday: [{ start: "11:00", end: "12:00", subject: "AI Lab", room: "AI Lab" }],
-      Friday: [{ start: "09:00", end: "10:00", subject: "Machine Learning", room: "JW101" }],
+      Wednesday: [{ start: "10:00", end: "11:00", subject: "NLP", room: "JW101" }],
+      Thursday: [{ start: "11:00", end: "12:00", subject: "Deep Learning Lab", room: "AIML Lab" }],
+      Friday: [{ start: "09:00", end: "10:00", subject: "Deep Learning", room: "JW101" }],
+    },
+    "vkvkamesh@adityauniversity.in": {
+      Monday: [
+        { start: "09:00", end: "10:00", subject: "Data Structures", room: "R101" },
+        { start: "10:00", end: "11:00", subject: "Operating Systems", room: "R103" },
+      ],
+      Tuesday: [{ start: "09:00", end: "10:00", subject: "Data Structures", room: "R105" }],
+      Wednesday: [{ start: "10:00", end: "11:00", subject: "Operating Systems", room: "R103" }],
+      Thursday: [{ start: "11:00", end: "12:00", subject: "OS Lab", room: "OS Lab" }],
+      Friday: [{ start: "09:00", end: "10:00", subject: "Data Structures", room: "R101" }],
     },
   };
 
@@ -453,6 +884,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "ACET (Aditya College of Engineering & Technology) administrative building housing the B.Tech ECE department along with college administration, examination cell, admissions and transport office. Allocation: Verified department building.",
+      allocation: {
+        institution: "ACET",
+        branches: ["B.Tech ECE", "Administration", "Examination", "Admissions", "Transport Office"],
+        years: "B.Tech 1st-4th",
+        status: "Verified department building",
+      },
     },
     {
       type: "block",
@@ -465,6 +902,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "ACET academic building hosting B.Tech Computer Science & Engineering (1st - 4th year) with classrooms and programming labs. Allocation: Verified.",
+      allocation: {
+        institution: "ACET",
+        branches: ["B.Tech CSE"],
+        years: "B.Tech 1st-4th",
+        status: "Verified",
+      },
     },
     {
       type: "block",
@@ -477,6 +920,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "ACET academic building hosting B.Tech Information Technology (1st - 4th year) with web, cloud and data structures labs. Allocation: Verified.",
+      allocation: {
+        institution: "ACET",
+        branches: ["B.Tech IT"],
+        years: "B.Tech 1st-4th",
+        status: "Verified",
+      },
     },
     {
       type: "block",
@@ -489,6 +938,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "ACET academic building hosting B.Tech Artificial Intelligence & Machine Learning, B.Tech Data Science and IoT-related programs with AI, ML and data science labs. Allocation: Verified grouping.",
+      allocation: {
+        institution: "ACET",
+        branches: ["B.Tech AI & ML", "B.Tech Data Science", "IoT programs"],
+        years: "B.Tech 1st-4th",
+        status: "Verified grouping",
+      },
     },
     {
       type: "block",
@@ -501,6 +956,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "ACET department building hosting B.Tech Electrical & Electronics Engineering, Mechanical Engineering and Civil Engineering (1st - 4th year) with workshop, CAD, concrete and power systems labs. Allocation: Verified department building.",
+      allocation: {
+        institution: "ACET",
+        branches: ["B.Tech EEE", "B.Tech Mechanical", "B.Tech Civil"],
+        years: "B.Tech 1st-4th",
+        status: "Verified department building",
+      },
     },
     {
       type: "block",
@@ -513,6 +974,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya University academic building planned for B.Tech Agricultural Engineering and B.Tech Mining Engineering (1st - 4th year). Allocation: Proposed.",
+      allocation: {
+        institution: "Aditya University",
+        branches: ["B.Tech Agricultural Engineering", "B.Tech Mining Engineering"],
+        years: "B.Tech 1st-4th",
+        status: "Proposed",
+      },
     },
     {
       type: "block",
@@ -524,7 +991,13 @@ async function seed() {
       openHours: "8:00 AM - 6:00 PM",
       isOpenNow: true,
       description:
-        "Aditya University academic building planned for B.Tech Petroleum Technology and M.Tech Energy Science & Technology. Allocation: Proposed.",
+        "Aditya University academic building housing the first-year students of all departments. Allocation: Proposed.",
+      allocation: {
+        institution: "Aditya University",
+        branches: ["First-year of all departments"],
+        years: "1st Year",
+        status: "Proposed",
+      },
     },
     {
       type: "block",
@@ -536,7 +1009,13 @@ async function seed() {
       openHours: "8:00 AM - 6:00 PM",
       isOpenNow: true,
       description:
-        "Aditya University academic building for B.Tech CSE (Data Science) and Bachelor of Computer Applications (BCA). Allocation: Proposed.",
+        "Aditya University academic building hosting the B.Tech Computer Science & Engineering department. Allocation: Proposed.",
+      allocation: {
+        institution: "Aditya University",
+        branches: ["B.Tech CSE"],
+        years: "B.Tech 1st-4th",
+        status: "Proposed",
+      },
     },
     {
       type: "block",
@@ -549,6 +1028,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya University academic building planned for B.Tech Civil Engineering, M.Tech Structural Engineering and M.Sc Real Estate Valuation. Allocation: Proposed.",
+      allocation: {
+        institution: "Aditya University",
+        branches: ["B.Tech Civil", "M.Tech Structural", "M.Sc Real Estate Valuation"],
+        years: "B.Tech 1st-4th; PG 1st-2nd",
+        status: "Proposed",
+      },
     },
     {
       type: "block",
@@ -560,7 +1045,13 @@ async function seed() {
       openHours: "8:00 AM - 6:00 PM",
       isOpenNow: true,
       description:
-        "Aditya University building for B.Tech Agricultural Engineering laboratories, shared engineering labs and research activity. Allocation: Proposed.",
+        "Aditya University academic building housing the AIML department for 2nd to 4th year students. Allocation: Proposed.",
+      allocation: {
+        institution: "Aditya University",
+        branches: ["B.Tech AI & ML"],
+        years: "2nd-4th Year",
+        status: "Proposed",
+      },
     },
     {
       type: "block",
@@ -573,6 +1064,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya Degree College, Surampalem campus hosting BBA, BBA Digital Marketing, B.Sc Forensic Science, B.Sc Animation, B.Sc Artificial Intelligence & Robotics, B.Sc Data Science and B.Sc Cyber Forensics along with MCA and MBA. Programs verified; exact room allocation is dynamic.",
+      allocation: {
+        institution: "Aditya Degree College, Surampalem",
+        branches: ["BBA", "BBA Digital Marketing", "B.Sc Forensic Science", "B.Sc Animation", "B.Sc AI & Robotics", "B.Sc Data Science", "B.Sc Cyber Forensics", "MCA", "MBA"],
+        years: "Degree 1st-3rd",
+        status: "Programs verified; rooms dynamic",
+      },
     },
     {
       type: "block",
@@ -585,6 +1082,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Pharmacy academic zone of Aditya University for B.Pharm (1st - 4th year) and Pharm.D (1st - 6th year) with chemistry, pharmacognosy and pharmacology labs. Program verified; building allocation proposed.",
+      allocation: {
+        institution: "Aditya University · Pharmacy zone",
+        branches: ["B.Pharm", "Pharm.D"],
+        years: "B.Pharm 1st-4th; Pharm.D 1st-6th",
+        status: "Program verified; building proposed",
+      },
     },
     {
       type: "block",
@@ -597,6 +1100,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Postgraduate pharmacy college of Aditya University for M.Pharm Pharmaceutics and M.Pharm Pharmaceutical Analysis with advanced pharmacy labs and research activity. Program verified; building allocation proposed.",
+      allocation: {
+        institution: "Aditya University · Pharmacy zone",
+        branches: ["M.Pharm Pharmaceutics", "M.Pharm Pharmaceutical Analysis"],
+        years: "M.Pharm 1st-2nd; research",
+        status: "Program verified; building proposed",
+      },
     },
     {
       type: "block",
@@ -609,6 +1118,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya Polytechnic College building for polytechnic administration, examination cell and common first-year diploma classes. Allocation: Verified.",
+      allocation: {
+        institution: "Aditya Polytechnic College",
+        branches: ["Polytechnic Administration", "Examination Cell", "Common 1st-year Diploma"],
+        years: "Diploma 1st Year",
+        status: "Verified",
+      },
     },
     {
       type: "block",
@@ -621,6 +1136,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya Polytechnic College department building for Diploma Civil Engineering, Diploma Electrical / EEE, Diploma Computer Engineering / CSE and Diploma Communication & Computer Networking. Allocation: Verified departments.",
+      allocation: {
+        institution: "Aditya Polytechnic College",
+        branches: ["Diploma Civil", "Diploma EEE", "Diploma CSE", "Diploma CCN"],
+        years: "Diploma 2nd-3rd Year",
+        status: "Verified departments",
+      },
     },
     {
       type: "block",
@@ -633,6 +1154,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Aditya Polytechnic College department building for Diploma Mechanical Engineering and Diploma ECE. Allocation: Verified.",
+      allocation: {
+        institution: "Aditya Polytechnic College",
+        branches: ["Diploma Mechanical", "Diploma ECE"],
+        years: "Diploma 2nd-3rd Year",
+        status: "Verified",
+      },
     },
     {
       type: "block",
@@ -645,6 +1172,12 @@ async function seed() {
       isOpenNow: true,
       description:
         "Shared polytechnic facilities, laboratories, workshops and overflow classes for the diploma programs. Allocation: Proposed as shared facility.",
+      allocation: {
+        institution: "Aditya Polytechnic College",
+        branches: ["Shared labs", "Workshops", "Overflow classes"],
+        years: "Diploma 1st-3rd",
+        status: "Proposed as shared facility",
+      },
     },
     {
       type: "block",
@@ -668,53 +1201,6 @@ async function seed() {
       isOpenNow: true,
       description:
         "Central library with reading rooms, reference section, e-journal access, and digital library. Open throughout the day for faculty and students.",
-    },
-    {
-      type: "shop",
-      name: "Main Food Court",
-      block: "Near Ramanujan Bhavan",
-      latitude: 17.0898,
-      longitude: 82.0674,
-      openHours: "8:00 AM - 9:00 PM",
-      isOpenNow: true,
-      items: [
-        { name: "Idly (2)", price: 30, available: true },
-        { name: "Dosa", price: 45, available: true },
-        { name: "Veg Biryani", price: 90, available: true },
-        { name: "Fried Rice", price: 80, available: false },
-        { name: "Filter Coffee", price: 20, available: true },
-        { name: "Tea", price: 15, available: true },
-      ],
-    },
-    {
-      type: "shop",
-      name: "Student Canteen",
-      block: "Near Edison Bhavan",
-      latitude: 17.0899,
-      longitude: 82.0678,
-      openHours: "9:00 AM - 6:00 PM",
-      isOpenNow: true,
-      items: [
-        { name: "Samosa", price: 20, available: true },
-        { name: "Cold Coffee", price: 40, available: true },
-        { name: "Maggi", price: 45, available: true },
-        { name: "Vada", price: 25, available: false },
-      ],
-    },
-    {
-      type: "shop",
-      name: "Stationery & Photocopy",
-      block: "Near Visvesvaraya Bhavan",
-      latitude: 17.0895,
-      longitude: 82.0667,
-      openHours: "9:00 AM - 5:00 PM",
-      isOpenNow: true,
-      items: [
-        { name: "Photocopy (per page)", price: 2, available: true },
-        { name: "Printout (per page)", price: 3, available: true },
-        { name: "Spiral Binding", price: 40, available: true },
-        { name: "Notebook", price: 60, available: true },
-      ],
     },
     {
       type: "service",
@@ -839,7 +1325,36 @@ async function seed() {
     },
   ]);
 
-  await BusRoute.insertMany([
+  // ── Food & campus shops (29 outlets from the master list) ─────────────────
+  const FOOD_SHOPS = require("./foodAndShopsData");
+  const AREA_ANCHORS = {
+    "Main Campus": { lat: 17.0897, lng: 82.0672 },
+    "Girls Hostel": { lat: 17.0901, lng: 82.0677 },
+    "Boys Hostel": { lat: 17.0899, lng: 82.0680 },
+    "Faculty Block": { lat: 17.0894, lng: 82.0669 },
+  };
+  const shopRows = FOOD_SHOPS.map((s, i) => {
+    const anchor = AREA_ANCHORS[s.area] || { lat: 17.0897, lng: 82.0672 };
+    const jitter = ((i % 3) - 1) * 0.00006;
+    return {
+      type: "shop",
+      name: s.name,
+      area: s.area,
+      areaGroup: s.group || undefined,
+      latitude: anchor.lat + jitter,
+      longitude: anchor.lng + jitter,
+      openHours: "8:00 AM - 9:00 PM",
+      isOpenNow: true,
+      items: s.items.map((it) => ({
+        name: it.name,
+        price: it.price,
+        available: true,
+      })),
+    };
+  });
+  await PointOfInterest.insertMany(shopRows);
+
+  const ENRICHED_BUS_ROUTES = [
     {
       routeNumber: "K-1",
       routeDescription: "Surampalem Campus -> Kakinada (via Chidambaranagar, Sarpavaram, Jagannaickpur)",
@@ -890,7 +1405,37 @@ async function seed() {
       driverContact: "+91 98490 00233",
       status: "On Route",
     },
-  ]);
+  ];
+
+  // ── Bus master table (310 buses) ──────────────────────────────────────────
+  // The college's full 310-bus roster. Hand-written demo routes above (with
+  // stops & timings) are overlaid on top by matching routeNumber.
+  const BUS_MASTER = require("./busDetailsData");
+  const busByNumber = new Map(
+    ENRICHED_BUS_ROUTES.map((b) => [b.routeNumber, b])
+  );
+  const busRows = BUS_MASTER.map((m) => {
+    const row = {
+      routeNumber: m.busNumber,
+      routeDescription: m.route,
+      driverName: m.driverName,
+      driverContact: m.driverPhone,
+      busType: m.busType,
+      ground: m.ground,
+      status: "On Route",
+    };
+    const enriched = busByNumber.get(m.busNumber);
+    if (enriched) Object.assign(row, enriched);
+    return row;
+  });
+
+  // Hand-written demo routes that don't exist in the master roster (they use
+  // their own route numbers) stay in the list so stop/timing data is retained.
+  for (const b of ENRICHED_BUS_ROUTES) {
+    if (!BUS_MASTER.some((m) => m.busNumber === b.routeNumber)) busRows.push(b);
+  }
+
+  await BusRoute.insertMany(busRows);
 
   await Event.insertMany([
     {

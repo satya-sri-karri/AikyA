@@ -1,19 +1,29 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Sidebar, { BottomNav } from "./components/Sidebar.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ChatWidget from "./components/ChatWidget.jsx";
 import EmergencyFab from "./components/EmergencyFab.jsx";
-import Landing from "./pages/Landing.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import CampusMap from "./pages/CampusMap.jsx";
-import Faculty from "./pages/Faculty.jsx";
-import Departments from "./pages/Departments.jsx";
-import Canteen from "./pages/Canteen.jsx";
-import Hostels from "./pages/Hostels.jsx";
-import Buses from "./pages/Buses.jsx";
-import Events from "./pages/Events.jsx";
-import Admin from "./pages/Admin.jsx";
+
+const Landing = lazy(() => import("./pages/Landing.jsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
+const CampusMapPage = lazy(() => import("./pages/CampusMap.jsx"));
+const Faculty = lazy(() => import("./pages/Faculty.jsx"));
+const Departments = lazy(() => import("./pages/Departments.jsx"));
+const Canteen = lazy(() => import("./pages/Canteen.jsx"));
+const Hostels = lazy(() => import("./pages/Hostels.jsx"));
+const Buses = lazy(() => import("./pages/Buses.jsx"));
+const Events = lazy(() => import("./pages/Events.jsx"));
+const Admin = lazy(() => import("./pages/Admin.jsx"));
+
+function AppLoading() {
+  return (
+    <div className="app-loading">
+      <div className="brand-mark">✦</div>
+      <div className="app-loading-dots"><span /><span /><span /></div>
+    </div>
+  );
+}
 
 function AppShell({ children }) {
   const [collapsed, setCollapsed] = useState(
@@ -43,24 +53,26 @@ function AppShell({ children }) {
 function MapPage() {
   return (
     <AppShell>
-      <CampusMap />
+      <CampusMapPage />
     </AppShell>
   );
 }
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/home" element={<Landing />} />
-      <Route path="/" element={<AppShell><Dashboard /></AppShell>} />
-      <Route path="/map" element={<MapPage />} />
-      <Route path="/faculty" element={<AppShell><Faculty /></AppShell>} />
-      <Route path="/departments" element={<AppShell><Departments /></AppShell>} />
-      <Route path="/canteen" element={<AppShell><Canteen /></AppShell>} />
-      <Route path="/hostels" element={<AppShell><Hostels /></AppShell>} />
-      <Route path="/buses" element={<AppShell><Buses /></AppShell>} />
-      <Route path="/events" element={<AppShell><Events /></AppShell>} />
-      <Route path="/admin" element={<AppShell><Admin /></AppShell>} />
-    </Routes>
+    <Suspense fallback={<AppLoading />}>
+      <Routes>
+        <Route path="/home" element={<Landing />} />
+        <Route path="/" element={<AppShell><Dashboard /></AppShell>} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/faculty" element={<AppShell><Faculty /></AppShell>} />
+        <Route path="/departments" element={<AppShell><Departments /></AppShell>} />
+        <Route path="/canteen" element={<AppShell><Canteen /></AppShell>} />
+        <Route path="/hostels" element={<AppShell><Hostels /></AppShell>} />
+        <Route path="/buses" element={<AppShell><Buses /></AppShell>} />
+        <Route path="/events" element={<AppShell><Events /></AppShell>} />
+        <Route path="/admin" element={<AppShell><Admin /></AppShell>} />
+      </Routes>
+    </Suspense>
   );
 }

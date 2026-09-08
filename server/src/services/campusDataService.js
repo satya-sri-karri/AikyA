@@ -120,7 +120,8 @@ function formatFaculty(faculty) {
 function formatPoi(p) {
   let extra = "";
   if (p.type === "shop" && p.items?.length) {
-    extra = " Items: " + p.items.map((i) => `${i.name} (Rs.${i.price}${i.available ? "" : ", unavailable"})`).join(", ");
+    extra = ` Items: ${p.items.map((i) => `${i.name} (${i.price || "price on request"}${i.available ? "" : ", unavailable"})`).join(", ")}`;
+    if (p.area) extra += ` Area: ${p.area}${p.areaGroup ? ` (${p.areaGroup})` : ""}.`;
   }
   if (p.type === "hostel") {
     extra = ` Type: ${p.hostelType}. Warden: ${p.warden || "N/A"}. Vacant rooms: ${p.vacantRooms ?? "N/A"}/${p.totalRooms ?? "N/A"}.`;

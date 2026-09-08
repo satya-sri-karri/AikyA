@@ -10,6 +10,8 @@ const poiSchema = new mongoose.Schema(
     name: { type: String, required: true },
     block: { type: String },
     floor: { type: String },
+    area: { type: String }, // e.g. "Main Campus" | "Girls Hostel" | "Boys Hostel" | "Faculty Block"
+    areaGroup: { type: String }, // optional sub-group e.g. "Street Food Stalls"
     latitude: { type: Number },
     longitude: { type: Number },
     openHours: { type: String },
@@ -20,7 +22,7 @@ const poiSchema = new mongoose.Schema(
     items: [
       {
         name: String,
-        price: Number,
+        price: { type: String }, // e.g. "₹20", "₹10–30", "Varies by day"
         available: { type: Boolean, default: true },
       },
     ],
@@ -39,6 +41,14 @@ const poiSchema = new mongoose.Schema(
       startTime: { type: String }, // e.g. "08:00"
       endTime: { type: String }, // e.g. "18:00"
       note: { type: String },
+    },
+
+    // Building / branch allocation (editable by admin, changes each year)
+    allocation: {
+      institution: { type: String },
+      branches: { type: [String] },
+      years: { type: String },
+      status: { type: String }, // e.g. "Proposed" | "Verified"
     },
   },
   { timestamps: true }

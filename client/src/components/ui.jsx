@@ -116,3 +116,14 @@ export function Chip({ active, onClick, children }) {
     </button>
   );
 }
+
+/* ---------- Price ---------- */
+export function formatPrice(price) {
+  if (price === undefined || price === null) return "";
+  const s = String(price).trim();
+  if (!s) return "";
+  // Legacy numeric prices and existing data like "₹20".
+  if (s.startsWith("₹")) return s;
+  if (/^\d+(\.\d+)?$/.test(s)) return `₹${s}`;
+  return s; // e.g. "Varies by day", "₹10–30", "₹1–2/page"
+}

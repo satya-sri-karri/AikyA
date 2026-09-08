@@ -7,11 +7,11 @@ import "leaflet/dist/leaflet.css";
 import { useUniverse, CAMPUS_CENTER, CAMPUS_GATE, getCampusConfig } from "../lib/useUniverse.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useFavorites } from "../lib/useFavorites.js";
-import { StatusBadge } from "./ui.jsx";
+import { StatusBadge, formatPrice } from "./ui.jsx";
 import DirectionsPanel from "./DirectionsPanel.jsx";
 
 const CAT = {
-  block: { label: "Blocks", color: "#7C6FF0", icon: "🏢" },
+  block: { label: "Blocks", color: "#07579C", icon: "🏢" },
   library: { label: "Library", color: "#2E7CF6", icon: "📚" },
   shop: { label: "Food", color: "#E5A00D", icon: "🍴" },
   hostel: { label: "Hostels", color: "#1E9E5A", icon: "🏠" },
@@ -39,7 +39,7 @@ const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyrigh
 
 const BOUNDS = getCampusConfig().bounds;
 
-const ROUTE_COLOR = { light: "#4F46E5", dark: "#8B9DFF" };
+const ROUTE_COLOR = { light: "#07579C", dark: "#8B9DFF" };
 const USER_COLOR = "#1E9E5A";
 const GATE_COLOR = "#E9A02B";
 
@@ -185,7 +185,7 @@ function BuildingDetail({
                 <li key={item.name}>
                   <span className="menu-name">{item.name}</span>
                   {item.available ? (
-                    <span className="menu-price">₹{item.price}</span>
+                    <span className="menu-price">{formatPrice(item.price)}</span>
                   ) : (
                     <span className="menu-sold">Sold out</span>
                   )}
@@ -332,6 +332,12 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
       el.classList.toggle("zoom-far", map.getZoom() < 15.5);
     });
 
+    // Clicking empty map closes any open panel.
+    map.on("click", () => {
+      setSelected(null);
+      setRouteTarget(null);
+    });
+
     const toggleZoomFar = () => el.classList.toggle("zoom-far", map.getZoom() < 15.5);
     toggleZoomFar();
 
@@ -365,13 +371,13 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
 
     const dark = theme === "dark";
     L.polygon(campusFootprint(), {
-      color: dark ? "#8B9DFF" : "#6D5EF8",
+      color: dark ? "#8B9DFF" : "#07579C",
       weight: 1.6,
       dashArray: "4 7",
       lineCap: "round",
-      opacity: dark ? 0.55 : 0.5,
-      fillColor: dark ? "#151F36" : "#6D5EF8",
-      fillOpacity: dark ? 0.10 : 0.055,
+      opacity: dark ? 0.55 : 0.45,
+      fillColor: dark ? "#151F36" : "#07579C",
+      fillOpacity: dark ? 0.10 : 0.05,
       interactive: false,
     }).addTo(layer);
 
@@ -449,7 +455,7 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
         if (poi.latitude == null || poi.longitude == null || !rooms.length) return;
         rooms.slice(0, 14).forEach((r, i) => {
           const { dx, dy } = scatterFor(i, r.floordx);
-          const ink = r.kind === "lab" ? "#2E7CF6" : "#8A7BFF";
+          const ink = r.kind === "lab" ? "#16A8E8" : "#07579C";
           const label =
             r.kind === "lab"
               ? r.no.replace(/\s+(Lab(laboratory)?)?$/i, "")
@@ -490,6 +496,7 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
       });
       marker.on("click", (e) => {
         L.DomEvent.stopPropagation(e);
+        setRouteTarget(null);
         setSelected(poi);
       });
       marker.bindTooltip(`${meta.icon} ${poi.name}`, {
@@ -573,6 +580,17 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
     }
   }, [routeTarget, userLoc, theme]);
 
+  /* ---------- close panels with Escape ---------- */
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key !== "Escape") return;
+      setSelected((s) => s && null);
+      setRouteTarget((r) => r && null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   /* ---------- panel / container resize handling ---------- */
   useEffect(() => {
     const map = mapRef.current;
@@ -633,6 +651,7 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
     setQ("");
     setFilter("all");
     setSelected(poi);
+    setRouteTarget(null);
     mapRef.current?.flyTo([poi.latitude, poi.longitude], 17);
   };
 
@@ -784,7 +803,14 @@ export default function CampusMap({ mode = "page", onNavigate, height }) {
           onToggleFavorite={toggleFavorite}
           onVisit={recordVisit}
           onClose={() => setSelected(null)}
-          onNavigate={(poi) => (mode === "page" ? setRouteTarget(poi) : onNavigate?.(poi))}
+          onNavigate={(poi) => {
+            if (mode === "page") {
+              setSelected(null);
+              setRouteTarget(poi);
+            } else {
+              onNavigate?.(poi);
+            }
+          }}
         />
       )}
 

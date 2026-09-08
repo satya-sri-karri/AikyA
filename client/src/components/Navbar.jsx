@@ -10,6 +10,15 @@ const LABEL_MAP = Object.fromEntries(
   NAV_SECTIONS.flatMap((s) => s.items).map((i) => [i.to, i.label])
 );
 
+const CENTER_LINKS = [
+  { to: "/", label: "Home", exact: true },
+  { to: "/map", label: "Explore" },
+  { to: "/faculty", label: "People" },
+  { to: "/canteen", label: "Food" },
+  { to: "/buses", label: "Transit" },
+  { to: "/events", label: "Events" },
+];
+
 function NotificationsBell() {
   const { data } = useUniverse();
   const [open, setOpen] = useState(false);
@@ -151,6 +160,7 @@ export default function Navbar({ onMenuClick }) {
   }
   const rootMatch = "/" + (parts[0] || "");
   const label = LABEL_MAP[crumbPath] ?? LABEL_MAP[rootMatch] ?? "Home";
+  const isActive = (l) => (l.exact ? pathname === l.to : pathname === l.to || pathname.startsWith(l.to + "/"));
 
   return (
     <header className="topbar">
@@ -162,9 +172,17 @@ export default function Navbar({ onMenuClick }) {
         <span className="brand-mark">✦</span>
         <span>
           <span className="brand-name">AIKYA</span>
-          <span className="brand-tag">One campus · connected</span>
+          <span className="brand-tag">Your Campus · One Intelligence</span>
         </span>
       </Link>
+
+      <nav className="topbar-links" aria-label="Primary">
+        {CENTER_LINKS.map((l) => (
+          <Link key={l.to} to={l.to} className={isActive(l) ? "active" : ""}>
+            {l.label}
+          </Link>
+        ))}
+      </nav>
 
       <div className="breadcrumbs">
         <button

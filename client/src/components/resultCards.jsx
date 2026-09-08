@@ -1,4 +1,5 @@
 import { MapPin, Clock, Navigation, CalendarDays, GraduationCap } from "lucide-react";
+import { formatPrice } from "./ui.jsx";
 
 /* Turns an AI question into an actionable entity card using the *real*
    campus collections. Returns null when nothing matches confidently —
@@ -101,7 +102,7 @@ export default function ResultCard({ kind, item, onNavigate, compact }) {
           <div className="res-meta">
             {(item.items || []).slice(0, 3).map((it) => (
               <span key={it.name}>
-                {it.name} <span className="res-price">₹{it.price}</span>
+                {it.name} <span className="res-price">{formatPrice(it.price)}</span>
               </span>
             ))}
           </div>
@@ -136,7 +137,12 @@ export default function ResultCard({ kind, item, onNavigate, compact }) {
           <div className="res-title">{item.routeDescription}</div>
           <div className="res-meta">
             <span className="badge badge-transparent" style={{ margin: 0 }}>{item.status || "On route"}</span>
-            <span><Clock size={13} /> Departs {item.departureTime} · Returns {item.returnTime}</span>
+            {item.departureTime && (
+              <span><Clock size={13} /> Departs {item.departureTime} · Returns {item.returnTime}</span>
+            )}
+            {item.busType && (
+              <span>{item.busType}{item.ground ? ` · ${item.ground}` : ""}</span>
+            )}
           </div>
           <div className="res-meta">
             {(item.stops || []).slice(0, 4).map((s) => (

@@ -14,6 +14,8 @@ const busRouteSchema = new mongoose.Schema(
     returnTime: { type: String },
     driverName: { type: String },
     driverContact: { type: String },
+    busType: { type: String }, // e.g. "Student Bus" | "Faculty Bus"
+    ground: { type: String }, // e.g. "Kakinada Bus Ground"
     status: { type: String, default: "On Route" },
   },
   { timestamps: true }

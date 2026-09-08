@@ -7,13 +7,14 @@ export default function Buses() {
   const { data, loading } = useUniverse(["buses"]);
   const navigate = useNavigate();
   const buses = data.buses || [];
+  const onRoute = buses.filter((b) => (b.status || "").toLowerCase().includes("route")).length;
 
   return (
     <div>
       <PageHeader
         kicker="Transit"
         title="Campus Transport"
-        sub="Bus routes, timings and drivers serving the campus."
+        sub={`Bus routes, timings and drivers serving the campus${buses.length ? ` · ${onRoute} on route now` : ""}.`}
       />
 
       {loading ? (
@@ -46,8 +47,13 @@ export default function Buses() {
               </div>
 
               <div className="rc-rows">
-                <div className="rc-row"><Clock size={14} /> Departs {b.departureTime} · Returns {b.returnTime}</div>
+                {b.departureTime && (
+                  <div className="rc-row"><Clock size={14} /> Departs {b.departureTime} · Returns {b.returnTime}</div>
+                )}
                 <div className="rc-row"><UserRound size={14} /> {b.driverName} · {b.driverContact}</div>
+                {b.busType && (
+                  <div className="rc-row muted">{b.busType}{b.ground ? ` · ${b.ground}` : ""}</div>
+                )}
               </div>
             </div>
           ))}

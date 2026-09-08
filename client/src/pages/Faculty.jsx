@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Clock, GraduationCap } from "lucide-react";
+import { MapPin, Clock, GraduationCap, Search } from "lucide-react";
 import { useUniverse } from "../lib/useUniverse.js";
 import { PageHeader, EmptyState, SkeletonGrid, Chip, StatusBadge } from "../components/ui.jsx";
 
@@ -8,6 +8,7 @@ export default function Faculty() {
   const { data, loading, refresh } = useUniverse();
   const [dept, setDept] = useState("all");
   const [avail, setAvail] = useState("all");
+  const [q, setQ] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => { refresh("faculty"); }, []);
@@ -18,7 +19,10 @@ export default function Faculty() {
   const filtered = faculty.filter((f) => {
     const dOk = dept === "all" || f.departmentName === dept;
     const aOk = avail === "all" || (avail === "free" ? !f.onLeave : f.onLeave);
-    return dOk && aOk;
+    const qq = q.trim().toLowerCase();
+    const sOk = !qq || (f.name || "").toLowerCase().includes(qq) ||
+      (f.designation || "").toLowerCase().includes(qq) || (f.cabin || "").toLowerCase().includes(qq);
+    return dOk && aOk && sOk;
   });
 
   return (
@@ -29,15 +33,28 @@ export default function Faculty() {
         sub="Profiles, departments and live availability across the campus."
       />
 
-      <div className="chips" style={{ marginBottom: 20 }}>
+      <div className="chips" style={{ marginBottom: 12 }}>
         <Chip active={dept === "all"} onClick={() => setDept("all")}>All departments</Chip>
         {departments.map((d) => (
           <Chip key={d} active={dept === d} onClick={() => setDept(d)}>{d}</Chip>
         ))}
-        <span style={{ width: 10 }} />
-        <Chip active={avail === "all"} onClick={() => setAvail("all")}>All</Chip>
-        <Chip active={avail === "free"} onClick={() => setAvail("free")}>🟢 Available</Chip>
-        <Chip active={avail === "leave"} onClick={() => setAvail("leave")}>🔴 On leave</Chip>
+      </div>
+
+      <div className="toolbar-row">
+        <div className="search-box" style={{ flex: 1, minWidth: 220, maxWidth: 360 }}>
+          <span className="search-icon"><Search size={16} /></span>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search name, designation or cabin…"
+            aria-label="Search faculty"
+          />
+        </div>
+        <span className="chip-row" style={{ gap: 8 }}>
+          <Chip active={avail === "all"} onClick={() => setAvail("all")}>All</Chip>
+          <Chip active={avail === "free"} onClick={() => setAvail("free")}>🟢 Available</Chip>
+          <Chip active={avail === "leave"} onClick={() => setAvail("leave")}>🔴 On leave</Chip>
+        </span>
       </div>
 
       {loading ? (
