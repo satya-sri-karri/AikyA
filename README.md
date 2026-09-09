@@ -1,94 +1,323 @@
-# CampusX — AI-Powered Smart Campus Assistant
+# AIKYA — One Campus. Everything Connected.
 
-Your Campus. Mapped. Connected. Intelligent.
+AIKYA is an AI-powered Smart Campus Digital Twin that brings important campus information into one platform.
 
-## What's in this repo
+It helps students and staff find buildings, classrooms, faculty, food shops, hostels, buses, services and events. The AI assistant can also answer campus-related questions using the information stored in the system.
 
-```
-campusx/
-├── server/     Express + MongoDB backend, xAI Grok API-powered chat assistant
-└── client/     React + Vite frontend
-```
+---
 
-## Prerequisites
+## What AIKYA Provides
 
-- Node.js 18+
-- A MongoDB connection string — either:
-  - Local MongoDB (`mongodb://localhost:27017/campusx`), or
-  - Free MongoDB Atlas cluster (recommended — no local install needed): https://www.mongodb.com/cloud/atlas/register
-- A Groq API key (free, used for the chat assistant): https://console.groq.com
+- Interactive campus map
+- Building / Bhavan navigation
+- Floor and room information
+- Faculty directory
+- Department information
+- Canteen and food shop information
+- Hostel room occupancy and warden details
+- Bus routes, timings and driver details
+- Campus services such as library and medical centre
+- Campus events and activities
+- AI-powered campus assistant
+- Google Maps directions
+- Admin panel for managing campus information
 
-## 1. Backend setup
+---
+
+## Technology Used
+
+### Frontend
+- React
+- Vite
+- JavaScript
+- Tailwind CSS
+
+### Backend
+- Node.js
+- Express.js
+
+### Database
+- MongoDB
+- MongoDB Atlas
+
+### AI
+- Grok API by xAI
+
+---
+
+## Project Structure
+
+AIKYA/
+│
+├── client/          # Frontend
+├── server/          # Backend
+├── docs/            # Documentation
+└── README.md        # Project information
+
+---
+
+# Installation Requirements
+
+Before running the project, install:
+
+- Node.js 18 or above
+- npm
+- MongoDB / MongoDB Atlas
+- Git
+- xAI API key
+
+Check Node.js and npm:
 
 ```bash
-cd server
-npm install
-cp .env.example .env
-# edit .env and fill in MONGODB_URI and AI_API_KEY (get it at https://console.groq.com)
-npm run seed     # loads demo campus data into your database
-npm run dev      # starts the server on http://localhost:5000
-```
+**node -v
+npm -v
+Installation
+1. Clone the Project
+git clone https://github.com/satya-sri-karri/AikyA.git
 
-Verify it's running: open http://localhost:5000/api/health — should return `{"status":"ok"}`.
+Move into the project folder:
 
-## 2. Frontend setup
+cd AikyA
+2. Install Frontend Dependencies
 
-Open a second terminal:
+Open a terminal and run:
 
-```bash
 cd client
 npm install
-npm run dev      # starts the app on http://localhost:5173
-```
+3. Install Backend Dependencies
 
-Open http://localhost:5173 in your browser.
+Open another terminal and run:
 
-## 3. Replacing demo data with your real college data
+cd server
+npm install
+Environment Setup
 
-Edit `server/src/seed/seed.js` — every block, faculty member, shop, hostel, bus route,
-and event is a plain JS object in there. Update the values, re-run `npm run seed`,
-and the whole app (map, directories, AI assistant) reflects the new data immediately —
-nothing is hardcoded in the frontend.
+The backend requires the MongoDB connection and AI API key.
 
-## 4. How the AI assistant works
+Inside the server folder, create a file named:
 
-The chat pipeline lives in `server/src/services/`. `campusDataService.js` does intent /
-query understanding and retrieves the relevant records from MongoDB, then
-`aiService.js` sends that context to the Groq API (a free Qwen model) along with the
-student's question and a grounding-aware system prompt. This intent-based retrieval
-keeps the prompt focused on the relevant campus data. If the dataset grows much
-larger, look into MongoDB Atlas Vector Search for proper retrieval instead of the
-current keyword-based intent matching.
+.env
 
-## 5. What's built vs. what's roadmap
+Add:
 
-**Built (Day 1–2 MVP):**
-- Campus map with clickable pins (departments, hostels, shops, library, grounds)
-- Faculty & department directories
-- Canteen/shop menus with live open/closed + item availability flags
-- Hostel occupancy, bus routes & timings, events
-- AI chat assistant grounded in real campus data, with escalation flagging
-- Full CRUD API on every collection (ready for an admin panel)
+PORT=5000
 
-**Roadmap (mention in the pitch, don't try to build under time pressure):**
-- Live GPS bus tracking and turn-by-turn navigation (Google Maps Directions API)
-- Role-based auth (student/faculty/staff/admin/security) with JWT
-- Faculty appointment booking workflow
-- Vector search once the knowledge base grows
-- QR codes, AR navigation, IoT sensor integration
+MONGODB_URI=your_mongodb_connection_string
 
-## 6. Admin panel
+XAI_API_KEY=your_xai_api_key
 
-An admin panel lives at http://localhost:5173/admin (link in the sidebar). It lets
-you add, edit and delete records for every collection (blocks & places, departments,
-faculty, buses, events) with no code changes.
+GROK_MODEL=grok-4.6
 
-- **Credentials:** set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `server/.env`
-  (there are no defaults, so change them and restart the server).
-- **How it works:** the admin signs in and receives a JWT. The token is stored in
-  the browser and sent as a `Bearer` header. Writes (`POST`, `PUT`, `DELETE`) are
-  protected server-side by `requireAuth`, while all reads stay public — so the
-  public app, map and chat keep working for visitors.
-- **Security:** `JWT_SECRET` signs the tokens; set it to a long random string.
-  The auth middleware is `server/src/middleware/auth.js`, the routes are
-  `server/src/routes/auth.js`, and the UI is `client/src/pages/Admin.jsx`.
+JWT_SECRET=your_jwt_secret
+
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_admin_password
+
+Replace the values with your actual credentials.
+
+Do not upload the .env file to GitHub.
+
+Running the Project
+
+AIKYA contains a frontend and a backend, so both need to be running.
+
+Step 1 — Start the Backend
+
+Open a terminal:
+
+cd AikyA/server
+npm run dev
+
+The backend will run on:
+
+http://localhost:5000
+
+If npm run dev is not available, use:
+
+npm start
+Step 2 — Start the Frontend
+
+Open another terminal:
+
+cd AikyA/client
+npm run dev
+
+Vite will display the local website address in the terminal.
+
+Usually:
+
+http://localhost:5173
+
+Open the displayed address in a browser.
+
+How to Use AIKYA
+
+After opening the website:
+
+Explore the campus using the map.
+Select a Bhavan to view its information.
+Navigate through floors and rooms.
+Search for faculty and departments.
+Check food shops and available food items.
+View hostel information.
+Check bus routes and timings.
+View campus services.
+Check upcoming events.
+Ask questions using the AI assistant.
+Use Google Maps for directions.
+Use the Admin Panel to update campus information.
+Example AI Questions
+
+You can ask the AI assistant questions such as:
+
+Where are the classrooms for first year CSE students?
+
+Where is the CSE department?
+
+Which faculty are available?
+
+Where is the library?
+
+What food is available in the canteen?
+
+What are the bus routes?
+
+Who is the driver of this bus?
+
+Which hostel rooms are vacant?
+
+Who is the hostel warden?
+
+When does the library open?
+
+Where is the medical centre?
+
+What events are happening today?
+
+The AI assistant uses the campus information stored in the database to answer these questions.
+
+Admin Panel
+
+The Admin Panel is used to manage the information shown in AIKYA.
+
+The administrator can add, edit or delete information such as:
+
+Buildings / Bhavans
+Floors
+Rooms
+Departments
+Faculty
+Food shops
+Food items
+Hostels
+Hostel rooms
+Wardens
+Bus routes
+Drivers
+Campus services
+Events
+
+This makes the system easy to maintain.
+
+For example, if a classroom is moved from one Bhavan to another, the administrator can update its location from the Admin Panel without changing the application code.
+
+Campus Data
+
+AIKYA stores campus information in MongoDB.
+
+The database contains information related to:
+
+Buildings
+Departments
+Faculty
+Rooms
+Points of interest
+Food shops
+Hostels
+Bus routes
+Events
+Campus services
+AI queries
+
+The data can be updated through the Admin Panel.
+
+AI Assistant
+
+The AI assistant is connected to the campus database.
+
+When a user asks a question:
+
+User Question
+      ↓
+AIKYA understands the question
+      ↓
+Campus information is retrieved
+      ↓
+Relevant information is given to the AI
+      ↓
+AI generates the answer
+      ↓
+Answer is shown to the user
+
+The purpose of this approach is to make the AI answer based on available campus information rather than randomly generating campus details.
+
+Google Maps
+
+AIKYA can provide map directions for campus locations.
+
+Users can select a location and open it in Google Maps to get directions.
+
+Important Note
+
+The project currently contains demo campus data for demonstration purposes.
+
+The actual campus information can be added or modified through the Admin Panel.
+
+This allows AIKYA to be adapted to a real university without changing the main application.
+
+Troubleshooting
+Backend is not starting
+
+Check that:
+
+Node.js is installed
+Backend dependencies are installed
+.env exists inside the server folder
+MongoDB connection details are correct
+
+Try:
+
+cd server
+npm install
+npm run dev
+Frontend is not starting
+
+Try:
+
+cd client
+npm install
+npm run dev
+AI Assistant is not responding
+
+Check the following value in .env:
+
+XAI_API_KEY=your_xai_api_key
+
+Also make sure that the backend is running.
+
+MongoDB is not connecting
+
+Check:
+
+MONGODB_URI=your_mongodb_connection_string
+
+If using MongoDB Atlas, make sure your current IP address is allowed in the MongoDB Atlas Network Access settings.
+
+Project Goal
+
+AIKYA aims to make a university campus easier to explore, understand and navigate by connecting campus data, maps and AI in one platform.
+
+Instead of searching through different sources for information about classrooms, faculty, buses, food, hostels, services and events, users can access everything from one place.
+
+AIKYA
+One Campus. Everything Connected.**
